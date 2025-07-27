@@ -63,77 +63,80 @@ If someone is in crisis, immediately provide crisis resources and show empathy.`
   }
 }
 
-// Function to search all Google Sheets tabs
+// Function to search Google Sheets using proper API
 async function searchKnowledgeBase(userMessage) {
   try {
-    const baseUrl = 'https://docs.google.com/spreadsheets/d/1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U/export?format=csv';
+    const { GoogleAuth } = require('google-auth-library');
+    const { google } = require('googleapis');
     
-    // Sheet IDs for each tab (we'll get these automatically)
-    const sheets = ['KB', 'Info', 'Journal'];
+    // Set up authentication
+    const auth = new GoogleAuth({
+      credentials: {
+        client_email: process.env.GOOGLE_SERVICE_EMAIL,
+        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+      },
+      scopes: ['https://www.googleapis.com/spreadsheets/readonly'],
+    });
+    
+    const sheets = google.sheets({ version: 'v4', auth });
+    const spreadsheetId = '1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U';
+    
+    // Search KB sheet
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: 'KB!A:M', // All columns A through M
+    });
+    
+    const rows = response.data.values;
+    if (!rows || rows.length < 2) return null;
+    
     const keywords = userMessage.toLowerCase();
     let bestMatch = '';
     let bestScore = 0;
     
-    // Search each sheet
-    for (const sheetName of sheets) {
-      try {
-        const sheetUrl = `${baseUrl}&gid=0`; // We'll search main sheet first
-        const response = await fetch(sheetUrl);
-        const csvData = await response.text();
-        
-        const lines = csvData.split('\n');
-        if (lines.length < 2) continue; // Skip if no data
-        
-        // Search through each row (skip header row 1)
-        for (let i = 1; i < lines.length; i++) {
-          const line = lines[i];
-          if (!line.trim()) continue;
-          
-          const columns = line.split(',');
-          if (columns.length < 3) continue;
-          
-          const content = columns[2] || ''; // Content column
-          const rowKeywords = columns[3] || ''; // Keywords column
-          const category = columns[0] || ''; // Category column
-          
-          let score = 0;
-          
-          // Pricing search
-          if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
-            if (content.toLowerCase().includes('price') || 
-                content.toLowerCase().includes('plan') || 
-                content.toLowerCase().includes('cost') ||
-                content.toLowerCase().includes('$') ||
-                category.toLowerCase().includes('pricing')) {
-              score += 10;
-            }
-          }
-          
-          // General keyword matching
-          const messageWords = keywords.split(' ');
-          for (const word of messageWords) {
-            if (word.length > 2) { // Skip short words
-              if (content.toLowerCase().includes(word)) score += 3;
-              if (rowKeywords.toLowerCase().includes(word)) score += 5;
-              if (category.toLowerCase().includes(word)) score += 2;
-            }
-          }
-          
-          // If this is our best match so far
-          if (score > bestScore && score > 0) {
-            bestScore = score;
-            bestMatch = content;
-          }
+    // Search through rows (skip header)
+    for (let i = 1; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row || row.length < 3) continue;
+      
+      const category = row[0] || '';
+      const title = row[1] || '';
+      const content = row[2] || '';
+      const rowKeywords = row[3] || '';
+      
+      let score = 0;
+      
+      // Pricing search
+      if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
+        if (content.toLowerCase().includes('price') || 
+            content.toLowerCase().includes('plan') || 
+            content.toLowerCase().includes('cost') ||
+            content.toLowerCase().includes('$') ||
+            category.toLowerCase().includes('pricing')) {
+          score += 10;
         }
-      } catch (sheetError) {
-        console.log(`Error searching sheet ${sheetName}:`, sheetError);
-        continue;
+      }
+      
+      // General keyword matching
+      const messageWords = keywords.split(' ');
+      for (const word of messageWords) {
+        if (word.length > 2) {
+          if (content.toLowerCase().includes(word)) score += 3;
+          if (rowKeywords.toLowerCase().includes(word)) score += 5;
+          if (category.toLowerCase().includes(word)) score += 2;
+          if (title.toLowerCase().includes(word)) score += 4;
+        }
+      }
+      
+      if (score > bestScore && score > 0) {
+        bestScore = score;
+        bestMatch = content;
       }
     }
     
     return bestMatch || null;
   } catch (error) {
-    console.error('Knowledge base search error:', error);
+    console.error('Google Sheets API error:', error);
     return null;
   }
 }
