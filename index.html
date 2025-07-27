@@ -524,39 +524,25 @@ If someone is in crisis, immediately provide crisis resources and show empathy.`
         }
 
         async function callOpenAI(userMessage) {
-            const apiKey = process.env.OPENAI_API_KEY;
-            
-            if (!apiKey) {
-                return "Please add your OpenAI API key to your environment variables.";
-            }
+    const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            message: userMessage,
+            conversationHistory: conversationHistory
+        })
+    });
 
-            const messages = [
-                { role: 'system', content: systemPrompt },
-                ...conversationHistory.slice(-10), // Keep last 10 messages for context
-            ];
-
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${apiKey}`
-                },
-                body: JSON.stringify({
-                    model: 'gpt-4',
-                    messages: messages,
-                    max_tokens: 500,
-                    temperature: 0.7
-                })
-            });
-
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error.message);
-            }
-            
-            return data.choices[0].message.content;
-        }
+    const data = await response.json();
+    
+    if (data.error) {
+        throw new Error(data.error);
+    }
+    
+    return data.message;
+}
 
         function addMessage(text, sender) {
             const messagesContainer = document.getElementById('chatMessages');
