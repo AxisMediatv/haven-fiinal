@@ -66,17 +66,48 @@ If someone is in crisis, immediately provide crisis resources and show empathy.`
 // Function to search the Google Sheets knowledge base
 async function searchKnowledgeBase(userMessage) {
   try {
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U/export?format=csv';
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U/export?format=csv&gid=0';
     
     const response = await fetch(sheetUrl);
     const csvData = await response.text();
     
-    // Parse CSV and search for relevant content
-    const rows = csvData.split('\n').slice(1); // Skip header row
-    const keywords = userMessage.toLowerCase().split(' ');
+    // Better CSV parsing
+    const lines = csvData.split('\n');
+    const headers = lines[0].split(',');
     
-    let bestMatch = null;
-    let highestScore = 0;
+    const keywords = userMessage.toLowerCase();
+    let bestMatch = '';
     
-    for (const row of rows) {
-      if (!row.trim())
+    // Search through each row
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      
+      // Simple search - if user message contains "price" or "cost" or "plan"
+      if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
+        if (line.toLowerCase().includes('price') || line.toLowerCase().includes('plan') || line.toLowerCase().includes('cost')) {
+          // Extract the content (assuming it's in column 3, index 2)
+          const columns = line.split(',');
+          if (columns.length >= 3) {
+            bestMatch = columns[2]; // Content column
+            break;
+          }
+        }
+      }
+      
+      // General keyword search
+      if (line.toLowerCase().includes(keywords)) {
+        const columns = line.split(',');
+        if (columns.length >= 3) {
+          bestMatch = columns[2]; // Content column
+          break;
+        }
+      }
+    }
+    
+    return bestMatch || null;
+  } catch (error) {
+    console.error('Knowledge base search error:', error);
+    return null;
+  }
+}
