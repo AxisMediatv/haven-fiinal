@@ -63,45 +63,71 @@ If someone is in crisis, immediately provide crisis resources and show empathy.`
   }
 }
 
-// Function to search the Google Sheets knowledge base
+// Function to search all Google Sheets tabs
 async function searchKnowledgeBase(userMessage) {
   try {
-    const sheetUrl = 'https://docs.google.com/spreadsheets/d/1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U/export?format=csv&gid=0';
+    const baseUrl = 'https://docs.google.com/spreadsheets/d/1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U/export?format=csv';
     
-    const response = await fetch(sheetUrl);
-    const csvData = await response.text();
-    
-    // Better CSV parsing
-    const lines = csvData.split('\n');
-    const headers = lines[0].split(',');
-    
+    // Sheet IDs for each tab (we'll get these automatically)
+    const sheets = ['KB', 'Info', 'Journal'];
     const keywords = userMessage.toLowerCase();
     let bestMatch = '';
+    let bestScore = 0;
     
-    // Search through each row
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      if (!line.trim()) continue;
-      
-      // Simple search - if user message contains "price" or "cost" or "plan"
-      if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
-        if (line.toLowerCase().includes('price') || line.toLowerCase().includes('plan') || line.toLowerCase().includes('cost')) {
-          // Extract the content (assuming it's in column 3, index 2)
+    // Search each sheet
+    for (const sheetName of sheets) {
+      try {
+        const sheetUrl = `${baseUrl}&gid=0`; // We'll search main sheet first
+        const response = await fetch(sheetUrl);
+        const csvData = await response.text();
+        
+        const lines = csvData.split('\n');
+        if (lines.length < 2) continue; // Skip if no data
+        
+        // Search through each row (skip header row 1)
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i];
+          if (!line.trim()) continue;
+          
           const columns = line.split(',');
-          if (columns.length >= 3) {
-            bestMatch = columns[2]; // Content column
-            break;
+          if (columns.length < 3) continue;
+          
+          const content = columns[2] || ''; // Content column
+          const rowKeywords = columns[3] || ''; // Keywords column
+          const category = columns[0] || ''; // Category column
+          
+          let score = 0;
+          
+          // Pricing search
+          if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
+            if (content.toLowerCase().includes('price') || 
+                content.toLowerCase().includes('plan') || 
+                content.toLowerCase().includes('cost') ||
+                content.toLowerCase().includes('$') ||
+                category.toLowerCase().includes('pricing')) {
+              score += 10;
+            }
+          }
+          
+          // General keyword matching
+          const messageWords = keywords.split(' ');
+          for (const word of messageWords) {
+            if (word.length > 2) { // Skip short words
+              if (content.toLowerCase().includes(word)) score += 3;
+              if (rowKeywords.toLowerCase().includes(word)) score += 5;
+              if (category.toLowerCase().includes(word)) score += 2;
+            }
+          }
+          
+          // If this is our best match so far
+          if (score > bestScore && score > 0) {
+            bestScore = score;
+            bestMatch = content;
           }
         }
-      }
-      
-      // General keyword search
-      if (line.toLowerCase().includes(keywords)) {
-        const columns = line.split(',');
-        if (columns.length >= 3) {
-          bestMatch = columns[2]; // Content column
-          break;
-        }
+      } catch (sheetError) {
+        console.log(`Error searching sheet ${sheetName}:`, sheetError);
+        continue;
       }
     }
     
