@@ -63,10 +63,9 @@ If someone is in crisis, immediately provide crisis resources and show empathy.`
   }
 }
 
-// Simplified Google Sheets search using CSV export
+// Search ALL text in each row
 async function searchKnowledgeBase(userMessage) {
   try {
-    // Use the CSV export method which we know works
     const csvUrl = 'https://docs.google.com/spreadsheets/d/1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U/export?format=csv&gid=0';
     
     const response = await fetch(csvUrl);
@@ -76,28 +75,51 @@ async function searchKnowledgeBase(userMessage) {
     if (lines.length < 2) return null;
     
     const keywords = userMessage.toLowerCase();
+    let bestMatch = '';
+    let bestScore = 0;
     
-    // Search each line for pricing info
+    // Search each line - look at ALL text in the entire row
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i];
-      if (!line) continue;
+      if (!line.trim()) continue;
       
-      // Simple pricing search
-      if ((keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) &&
-          (line.toLowerCase().includes('price') || line.toLowerCase().includes('plan') || line.toLowerCase().includes('$'))) {
-        
-        // Extract content from the line (assuming it's the 3rd column)
-        const parts = line.split(',');
-        if (parts.length >= 3) {
-          return parts[2]; // Return the content column
+      const entireRowText = line.toLowerCase();
+      let score = 0;
+      
+      // Check for pricing keywords
+      if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
+        if (entireRowText.includes('price') || 
+            entireRowText.includes('plan') || 
+            entireRowText.includes('cost') ||
+            entireRowText.includes('$') ||
+            entireRowText.includes('pricing') ||
+            entireRowText.includes('subscription') ||
+            entireRowText.includes('monthly')) {
+          score += 10;
+          
+          // Return the entire row content for pricing
+          bestMatch = line.replace(/,/g, ' | '); // Replace commas with separators for readability
         }
+      }
+      
+      // General keyword search in entire row
+      const messageWords = keywords.split(' ');
+      for (const word of messageWords) {
+        if (word.length > 2 && entireRowText.includes(word)) {
+          score += 2;
+        }
+      }
+      
+      // If this row has a good match and we don't have pricing yet
+      if (score > bestScore && score > 0 && !bestMatch.includes('$')) {
+        bestScore = score;
+        bestMatch = line.replace(/,/g, ' | ');
       }
     }
     
-    return null;
+    return bestMatch || null;
   } catch (error) {
     console.error('Knowledge base error:', error);
     return null;
   }
-}
 }
