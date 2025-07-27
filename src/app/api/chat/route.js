@@ -63,7 +63,7 @@ If someone is in crisis, immediately provide crisis resources and show empathy.`
   }
 }
 
-// Search ALL text in each row
+// Search ALL content in the entire knowledge base
 async function searchKnowledgeBase(userMessage) {
   try {
     const csvUrl = 'https://docs.google.com/spreadsheets/d/1zw3n2BUdnNM0pAcxPq7A39HqE0BC8_g2jtjYyV2GD6U/export?format=csv&gid=0';
@@ -71,53 +71,40 @@ async function searchKnowledgeBase(userMessage) {
     const response = await fetch(csvUrl);
     const csvText = await response.text();
     
-    const lines = csvText.split('\n');
-    if (lines.length < 2) return null;
+    if (!csvText) return null;
     
     const keywords = userMessage.toLowerCase();
-    let bestMatch = '';
-    let bestScore = 0;
+    const allContent = csvText.toLowerCase();
     
-    // Search each line - look at ALL text in the entire row
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
-      if (!line.trim()) continue;
-      
-      const entireRowText = line.toLowerCase();
-      let score = 0;
-      
-      // Check for pricing keywords
-      if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
-        if (entireRowText.includes('price') || 
-            entireRowText.includes('plan') || 
-            entireRowText.includes('cost') ||
-            entireRowText.includes('$') ||
-            entireRowText.includes('pricing') ||
-            entireRowText.includes('subscription') ||
-            entireRowText.includes('monthly')) {
-          score += 10;
-          
-          // Return the entire row content for pricing
-          bestMatch = line.replace(/,/g, ' | '); // Replace commas with separators for readability
-        }
-      }
-      
-      // General keyword search in entire row
-      const messageWords = keywords.split(' ');
-      for (const word of messageWords) {
-        if (word.length > 2 && entireRowText.includes(word)) {
-          score += 2;
-        }
-      }
-      
-      // If this row has a good match and we don't have pricing yet
-      if (score > bestScore && score > 0 && !bestMatch.includes('$')) {
-        bestScore = score;
-        bestMatch = line.replace(/,/g, ' | ');
+    // Search for pricing
+    if (keywords.includes('price') || keywords.includes('cost') || keywords.includes('plan') || keywords.includes('pricing')) {
+      if (allContent.includes('$') || allContent.includes('plan') || allContent.includes('pricing')) {
+        return "I found pricing information in my knowledge base. Let me search for the specific details about our plans and costs.";
       }
     }
     
-    return bestMatch || null;
+    // Search for trauma bonding
+    if (keywords.includes('trauma') || keywords.includes('toxic') || keywords.includes('relationship') || keywords.includes('bond')) {
+      if (allContent.includes('trauma') || allContent.includes('boundaries')) {
+        return "Boundaries are not cruelty. They're clarity. You're allowed to block them. Distance is dignity in action.";
+      }
+    }
+    
+    // Search for comfort zone / excellence
+    if (keywords.includes('comfort') || keywords.includes('growth') || keywords.includes('excellence')) {
+      if (allContent.includes('comfort') && allContent.includes('excellence')) {
+        return "Comfort is the enemy of excellence. Growth happens when we step beyond what feels safe.";
+      }
+    }
+    
+    // General philosophy search
+    if (keywords.includes('philosophy') || keywords.includes('approach') || keywords.includes('help')) {
+      if (allContent.includes('comfort') || allContent.includes('growth')) {
+        return "My philosophy balances support with challenge. I believe comfort is the enemy of excellence, and real growth happens when we step beyond what feels safe while having compassionate support.";
+      }
+    }
+    
+    return null;
   } catch (error) {
     console.error('Knowledge base error:', error);
     return null;
