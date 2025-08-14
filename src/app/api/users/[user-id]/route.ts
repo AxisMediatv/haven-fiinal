@@ -43,10 +43,10 @@ const userDatabase: Record<string, User> = {
 
 export async function GET(
   request: Request,
-  { params }: { params: { 'user-id': string } }
+  { params }: { params: Promise<{ 'user-id': string }> }
 ) {
   try {
-    const userId = params['user-id'];
+    const { 'user-id': userId } = await params;
     
     if (!userId) {
       return NextResponse.json(
