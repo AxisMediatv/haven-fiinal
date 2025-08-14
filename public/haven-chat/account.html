@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haven - Account Settings</title>
+    <meta name="description" content="Manage your Haven account settings, track your conversations, and customize your experience.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFF5E1 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 98%;
+            margin: 0 auto;
+            padding: 0 1px;
+            padding-bottom: 120px;
+        }
+
+        .account-header {
+            background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .account-header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .account-header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+            color: white;
+        }
+
+        .beta-logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .beta-logo svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.9em;
+            margin-right: 8px;
+        }
+
+        .beta-price {
+            color: #FF6B8A;
+            font-weight: bold;
+        }
+
+        .account-content {
+            padding: 30px;
+            flex: 1;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-icon {
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .setting-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .setting-item:hover {
+            border-color: #FF6B8A;
+            transform: translateY(-2px);
+        }
+
+        .setting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .setting-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .setting-value {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .setting-description {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 1em;
+            margin-top: 10px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #FF6B8A;
+        }
+
+        /* Plan Management */
+        .plan-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .plan-card.current {
+            border-color: #FF6B8A;
+            background: rgba(255, 107, 138, 0.05);
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .plan-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.2em;
+        }
+
+        .plan-price {
+            color: #FF6B8A;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        .plan-features {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .plan-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Persona Settings */
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .persona-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .persona-card:hover {
+            border-color: #FF6B8A;
+            transform: translateY(-2px);
+        }
+
+        .persona-card.selected {
+            border-color: #FF6B8A;
+            background: rgba(255, 107, 138, 0.1);
+        }
+
+        .persona-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .persona-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .persona-description {
+            font-size: 0.8em;
+            color: #666;
+            line-height: 1.3;
+        }
+
+        /* Energy Type Selection */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .mood-card {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9em;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .mood-card:nth-child(1) { background: #FF6B8A; } /* Motherly - Pink */
+        .mood-card:nth-child(2) { background: #FF8A65; } /* Fatherly - Orange */
+        .mood-card:nth-child(3) { background: #9C27B0; } /* Faith-Centered - Purple */
+        .mood-card:nth-child(4) { background: #FF8A65; } /* Best Friend - Orange */
+        .mood-card:nth-child(5) { background: #FF6B8A; } /* Wise Mentor - Pink */
+        .mood-card:nth-child(6) { background: #FFD93D; } /* Solution Coach - Yellow */
+        .mood-card:nth-child(7) { background: #FF6B8A; } /* Calm & Centering - Pink */
+        .mood-card:nth-child(8) { background: #FF6B8A; } /* Balanced Mix - Pink */
+
+        .mood-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .mood-card.selected {
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #FF6B8A;
+        }
+
+        .mood-card.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .mood-name {
+            font-weight: 500;
+            color: white;
+            line-height: 1.2;
+        }
+
+        .qualities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .quality-item {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .quality-item:hover {
+            border-color: #FF6B8A;
+        }
+
+        .quality-item input[type="checkbox"] {
+            transform: scale(1.2);
+            accent-color: #FF6B8A;
+        }
+
+        .quality-name {
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+
+
+        /* Conversation History */
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #FF6B8A;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .conversation-item {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .conversation-item:hover {
+            border-color: #FF6B8A;
+            transform: translateY(-1px);
+        }
+
+        .conversation-date {
+            font-size: 0.8em;
+            color: #999;
+            margin-bottom: 5px;
+        }
+
+        .conversation-preview {
+            color: #333;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .conversation-tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: rgba(255, 107, 138, 0.1);
+            color: #FF6B8A;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .button {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 138, 0.3);
+        }
+
+        .button.secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #eee;
+        }
+
+        .button.secondary:hover {
+            border-color: #FF6B8A;
+            color: #FF6B8A;
+        }
+
+        .button.success {
+            background: #FF6B8A;
+        }
+
+        .button.warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .save-button {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 138, 0.3);
+        }
+
+        /* Plan Management Styles */
+        .plan-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .plan-card.current {
+            border-color: #FF6B8A;
+            background: rgba(255, 107, 138, 0.05);
+        }
+
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .plan-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .plan-price {
+            font-weight: 600;
+            color: #FF6B8A;
+            font-size: 0.9em;
+        }
+
+        .plan-features {
+            color: #666;
+            font-size: 0.8em;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .plan-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .plan-actions .button {
+            font-size: 0.8em;
+            padding: 8px 12px;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        /* Service and Action Cards */
+        .service-card, .action-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover, .action-card:hover {
+            border-color: #FF6B8A;
+            transform: translateY(-1px);
+        }
+
+        .service-header, .action-header {
+            margin-bottom: 10px;
+        }
+
+        .service-name, .action-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+            margin-bottom: 5px;
+        }
+
+        .service-price {
+            font-weight: 600;
+            color: #FF6B8A;
+            font-size: 0.9em;
+        }
+
+        .service-description, .action-description {
+            color: #666;
+            font-size: 0.8em;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #666;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: #FF6B8A;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #FF6B8A !important;
+            color: white !important;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .nav-item:nth-child(1) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(2) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(3) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(4) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(5) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(6) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(7) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:hover .nav-icon,
+        .nav-item.active .nav-icon {
+            filter: brightness(0) invert(1) !important;
+        }
+
+        .nav-label {
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .footer-banner {
+            background: #f8f9fa;
+            padding: 5.5px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            width: 100%;
+        }
+
+        .footer-text {
+            color: #666666;
+            font-size: 9.975px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .account-content {
+                padding: 20px;
+            }
+            
+            .persona-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .qualities-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .history-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="account-header">
+            <div class="beta-logo">
+                <img src="/haven-logo.png" alt="Haven Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                <div style="background: #FFD93D; color: #333; padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(255, 217, 61, 0.3); position: absolute; top: -10px; right: -10px;">BETA</div>
+            </div>
+            <h1>Account Settings</h1>
+            <p>Manage your Haven experience and track your progress</p>
+        </div>
+
+        <div class="account-content">
+            <!-- Account Information Section -->
+            <div class="section">
+                <h2><span class="section-icon"></span>Account Information</h2>
+                
+                <div class="user-info-section" style="margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 15px; border: 2px solid #FF6B8A;">
+                    <div class="user-details">
+                        <div class="preferred-name" style="margin-bottom: 20px;">
+                            <strong style="color: #666; display: block; margin-bottom: 8px;">Preferred Name:</strong>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" class="input-field" id="preferredName" placeholder="Enter your preferred name" style="flex: 1; padding: 10px; border: 2px solid #eee; border-radius: 15px; font-size: 1em; background: white;">
+                                <button onclick="savePreferredName()" style="
+                                    background: #FF6B8A;
+                                    color: white;
+                                    border: none;
+                                    padding: 10px 15px;
+                                    border-radius: 15px;
+                                    font-size: 0.9em;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                    white-space: nowrap;
+                                " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                    Save Name
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="user-email" style="margin-bottom: 15px;">
+                            <strong style="color: #666;">Email:</strong>
+                            <span id="userEmailDisplay" style="color: #333; margin-left: 8px;">Loading...</span>
+                        </div>
+                        
+                        <div class="current-subscription" style="margin-bottom: 15px;">
+                            <strong style="color: #666;">Current Subscription:</strong>
+                            <span id="userSubscriptionDisplay" style="color: #FF6B8A; font-weight: bold; margin-left: 8px; font-size: 1.1em;">Loading...</span>
+                        </div>
+                        
+                        <div class="tokens-remaining" style="margin-bottom: 15px;">
+                            <strong style="color: #666;">Tokens Remaining:</strong>
+                            <span id="userTokensDisplay" style="color: #FF6B8A; font-weight: bold; margin-left: 8px; font-size: 1.1em;">Loading...</span>
+                        </div>
+                        
+                        <div class="tokens-info" style="font-size: 0.9em; color: #666; line-height: 1.4; margin-bottom: 15px;">
+                            <div style="margin-bottom: 5px;">• Each conversation uses approximately 50-100 tokens</div>
+                            <div style="margin-bottom: 5px;">• You have enough tokens for about 12-25 more conversations</div>
+                            <div style="margin-bottom: 15px;">• Tokens refresh monthly with your subscription</div>
+                        </div>
+                        
+                        <div class="member-since" style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;">
+                            <strong style="color: #666;">Member Since:</strong>
+                            <span style="color: #333; margin-left: 8px;">March 15, 2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- Persona Settings -->
+            <div class="section">
+                <h2><span class="section-icon"></span>Persona Settings</h2>
+                <div class="setting-description">Choose how Haven communicates with you. You can change this anytime.</div>
+                
+                <h3 style="margin: 20px 0 10px 0; color: #333;">Energy Type</h3>
+                <div class="mood-grid">
+                    <div class="mood-card" data-mood="motherly">
+                        <div class="mood-name">Motherly - Sweet & Nurturing</div>
+                    </div>
+                    <div class="mood-card" data-mood="fatherly">
+                        <div class="mood-name">Fatherly - Strong & Bold</div>
+                    </div>
+                    <div class="mood-card" data-mood="faith-centered">
+                        <div class="mood-name">Faith-Centered & Wise</div>
+                    </div>
+                    <div class="mood-card" data-mood="best-friend">
+                        <div class="mood-name">Best Friend Energy - conversation and humor</div>
+                    </div>
+                    <div class="mood-card" data-mood="wise-mentor">
+                        <div class="mood-name">Wise Mentor - gentle but transformative</div>
+                    </div>
+                    <div class="mood-card" data-mood="solution-coach">
+                        <div class="mood-name">Solution-Focused Coach - Practical action-oriented</div>
+                    </div>
+                    <div class="mood-card" data-mood="calm-centering">
+                        <div class="mood-name">Calm & Centering - Meditation and mindfulness</div>
+                    </div>
+                    <div class="mood-card" data-mood="balanced-mix">
+                        <div class="mood-name">Balanced Mix</div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 20px 0 10px 0; color: #333;">Qualities</h3>
+                <div class="setting-description" style="margin-bottom: 15px;">Choose the qualities that would help you most (pick as many as you'd like)</div>
+                <div class="qualities-grid">
+                    <div class="quality-item">
+                        <input type="checkbox" id="quality-non-judgmental" data-quality="non-judgmental" style="margin-right: 10px;">
+                        <label for="quality-non-judgmental" class="quality-name">Non-judgmental listener</label>
+                    </div>
+                    <div class="quality-item">
+                        <input type="checkbox" id="quality-tough-love" data-quality="tough-love" style="margin-right: 10px;">
+                        <label for="quality-tough-love" class="quality-name">Loving tough love when needed</label>
+                    </div>
+                    <div class="quality-item">
+                        <input type="checkbox" id="quality-empathetic" data-quality="empathetic" style="margin-right: 10px;">
+                        <label for="quality-empathetic" class="quality-name">Deeply empathetic and caring</label>
+                    </div>
+                    <div class="quality-item">
+                        <input type="checkbox" id="quality-faith-centered" data-quality="faith-centered" style="margin-right: 10px;">
+                        <label for="quality-faith-centered" class="quality-name">Faith-centered perspective</label>
+                    </div>
+                    <div class="quality-item">
+                        <input type="checkbox" id="quality-problem-solver" data-quality="problem-solver" style="margin-right: 10px;">
+                        <label for="quality-problem-solver" class="quality-name">Direct problem-solver</label>
+                    </div>
+                    <div class="quality-item">
+                        <input type="checkbox" id="quality-encourager" data-quality="encourager" style="margin-right: 10px;">
+                        <label for="quality-encourager" class="quality-name">Gentle encourager</label>
+                    </div>
+                    <div class="quality-item">
+                        <input type="checkbox" id="quality-growth-focused" data-quality="growth-focused" style="margin-right: 10px;">
+                        <label for="quality-growth-focused" class="quality-name">Growth-focused challenger</label>
+                    </div>
+                </div>
+
+                <button class="save-button" onclick="savePersonaSettings()">Save Persona Settings</button>
+            </div>
+
+
+
+            <!-- Conversation History -->
+            <div class="section history-section">
+                <h2><span class="section-icon"></span>Conversation History</h2>
+                
+                <!-- History Actions -->
+                <div class="history-actions" style="margin-bottom: 25px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="button secondary" onclick="exportHistory()" style="background: #FFD93D; color: #333; border: none; padding: 10px 15px; border-radius: 15px; font-size: 0.9em; cursor: pointer; transition: all 0.3s ease;">
+                        Export History
+                    </button>
+                    <button class="button secondary" onclick="saveHistory()" style="background: #FF9A8B; color: white; border: none; padding: 10px 15px; border-radius: 15px; font-size: 0.9em; cursor: pointer; transition: all 0.3s ease;">
+                        Save to Cloud
+                    </button>
+                    <button class="button warning" onclick="clearHistory()" style="background: #ff6b6b; color: white; border: none; padding: 10px 15px; border-radius: 15px; font-size: 0.9em; cursor: pointer; transition: all 0.3s ease;">
+                        Clear History
+                    </button>
+                </div>
+                
+                <div class="history-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalConversations">0</div>
+                        <div class="stat-label">Total Conversations</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="thisWeekConversations">0</div>
+                        <div class="stat-label">This Week</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="avgDuration">0</div>
+                        <div class="stat-label">Avg Duration (min)</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-number" id="daysActive">0</div>
+                        <div class="stat-label">Days Active</div>
+                    </div>
+                </div>
+
+                <div id="conversationHistoryContainer">
+                    <!-- Real conversations will be loaded here -->
+                </div>
+
+
+
+
+
+            <!-- Analytics Section -->
+            <div class="section">
+                <h2><span class="section-icon">📊</span>Analytics</h2>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="button secondary" onclick="showAnalytics()">View Analytics</button>
+                    <button class="button secondary" onclick="showEmotionalPatterns()">Emotional Patterns</button>
+                    <button class="button secondary" onclick="showTimePatterns()">Time Patterns</button>
+                </div>
+                <div id="analyticsContainer" style="display: none; margin-top: 20px;">
+                    <!-- Analytics will be displayed here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="section">
+            <h2><span class="section-icon"></span>Actions</h2>
+            
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <button class="button secondary" onclick="exportConversationData()">Export Data</button>
+                <button class="button secondary" onclick="exportConversationStats()">Export Stats</button>
+                <button class="button secondary" onclick="clearConversationData()">Clear Data</button>
+                <button class="button secondary">Privacy Settings</button>
+                <button class="button secondary">Help & Support</button>
+            </div>
+        </div>
+
+        <!-- Conversation Settings -->
+        <div class="section">
+            <h2><span class="section-icon">💾</span>Conversation Settings</h2>
+            
+            <div style="background: rgba(255, 255, 255, 0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">Save Conversations:</label>
+                    <select id="accountSaveModeSelect" style="
+                        width: 100%;
+                        padding: 12px;
+                        border: 1px solid #ddd;
+                        border-radius: 8px;
+                        background: white;
+                        font-size: 14px;
+                        margin-bottom: 10px;
+                    ">
+                        <option value="auto">Save Automatically</option>
+                        <option value="manual">Save Manually Only</option>
+                        <option value="none">Don't Save Any</option>
+                    </select>
+                </div>
+                <div style="font-size: 12px; color: #666; line-height: 1.4; margin-bottom: 15px;">
+                    <strong>Auto:</strong> All conversations are saved automatically<br>
+                    <strong>Manual:</strong> You choose which conversations to save<br>
+                    <strong>None:</strong> No conversations are saved (data stays private)
+                </div>
+                <button id="accountSaveSettingsBtn" class="button success" onclick="saveAccountSettings()">Save Settings</button>
+            </div>
+        </div>
+
+        <!-- Token Management -->
+        <div class="section" id="tokensSection" style="display: none;">
+            <h2><span class="section-icon">🪙</span>Token Management</h2>
+            <div style="background: rgba(255, 255, 255, 0.8); border-radius: 15px; padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 1.2em; font-weight: 600; color: #333; margin-bottom: 5px;">
+                            Tokens Remaining: <span id="tokensDisplay" style="color: #FF6B8A;">0 / 300</span>
+                        </div>
+                        <div id="tokensDescription" style="font-size: 0.9em; color: #666;">
+                            You have 0 tokens remaining this month.
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.8em; color: #999;">Monthly Reset</div>
+                        <div id="nextReset" style="font-size: 0.9em; color: #666;">Next month</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="button secondary" onclick="buyEmergencyTokens()" style="background: #FFD93D; color: #333;">
+                        🚨 Emergency Top-up ($2.99)
+                    </button>
+                    <button class="button secondary" onclick="viewTokenHistory()">
+                        📊 Usage History
+                    </button>
+                </div>
+            </div>
+        </div>
+
+            <!-- Plan Management -->
+            <div class="section">
+                <h2><span class="section-icon"></span>Plan Management</h2>
+                
+                <div class="plan-card current">
+                    <div class="plan-header">
+                        <div class="plan-name">Starter Plan</div>
+                        <div class="plan-price">
+                            <span class="original-price">$5.99/month</span>
+                            <span class="beta-price">$2.99/month</span>
+                        </div>
+                    </div>
+                    <div class="plan-features">300 tokens per month • Basic support • Standard features</div>
+                    <div class="plan-actions">
+                        <button class="button success" onclick="upgradePlan('regular')">Upgrade to Regular ($9.99)</button>
+                    </div>
+                </div>
+
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <div class="plan-name">Regular Plan</div>
+                        <div class="plan-price">
+                            <span class="original-price">$19.99/month</span>
+                            <span class="beta-price">$9.99/month</span>
+                        </div>
+                    </div>
+                    <div class="plan-features">1,500 tokens per month • Journal access • Priority support</div>
+                    <div class="plan-actions">
+                        <button class="button secondary" onclick="downgradePlan('starter')">Downgrade to Starter ($2.99)</button>
+                        <button class="button success" onclick="upgradePlan('premium')">Upgrade to Premium ($19.99)</button>
+                    </div>
+                </div>
+
+                <div class="plan-card">
+                    <div class="plan-header">
+                        <div class="plan-name">Premium Family Plan</div>
+                        <div class="plan-price">
+                            <span class="original-price">$39.99/month</span>
+                            <span class="beta-price">$19.99/month</span>
+                        </div>
+                    </div>
+                    <div class="plan-features">4,000 tokens shared • Up to 4 users • All features</div>
+                    <div class="plan-actions">
+                        <button class="button secondary" onclick="downgradePlan('regular')">Downgrade to Regular ($9.99)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Services -->
+            <div class="section">
+                <h2><span class="section-icon"></span>Additional Services</h2>
+                
+                <div class="service-card">
+                    <div class="service-header">
+                        <div class="service-name">Buy More Tokens</div>
+                        <div class="service-price">$2.99 for 100 tokens</div>
+                    </div>
+                    <div class="service-description">Need more tokens to continue your conversations? Get 100 additional tokens instantly.</div>
+                    <button class="button secondary" onclick="buyMoreTokens()">Buy More Tokens</button>
+                </div>
+            </div>
+
+            <!-- Legal & Privacy -->
+            <div class="section">
+                <h2><span class="section-icon"></span>Legal & Privacy</h2>
+                
+                <div class="action-card">
+                    <div class="action-header">
+                        <div class="action-name">Terms of Service</div>
+                        <div class="action-description">Read our terms and conditions to understand your rights and responsibilities.</div>
+                    </div>
+                    <a href="terms.html" class="button secondary">Read Terms</a>
+                </div>
+
+                <div class="action-card">
+                    <div class="action-header">
+                        <div class="action-name">Privacy Policy</div>
+                        <div class="action-description">Learn how we protect your personal information and handle your data.</div>
+                    </div>
+                    <a href="privacy.html" class="button secondary">Read Policy</a>
+                </div>
+            </div>
+
+            <!-- Account Actions -->
+            <div class="section">
+                <h2><span class="section-icon"></span>Account Actions</h2>
+                
+                <div class="action-card">
+                    <div class="action-header">
+                        <div class="action-name">Cancel Subscription</div>
+                        <div class="action-description">Cancel your current plan. You'll have access until the end of your billing period.</div>
+                    </div>
+                    <button class="button warning" onclick="cancelSubscription()">Cancel Subscription</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-items">
+            <a href="home.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Home</div>
+            </a>
+            <a href="index.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Chat</div>
+            </a>
+            <a href="journal.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Journal</div>
+            </a>
+            <a href="badges.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Badges</div>
+            </a>
+            <a href="plans.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Plans</div>
+            </a>
+            <a href="account.html" class="nav-item active">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Account</div>
+            </a>
+            <a href="support.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Support</div>
+            </a>
+                    </div>
+            <!-- Footer Banner -->
+            <div class="footer-banner">
+                <div class="footer-text">
+                    <div>Haven is an educational platform. Not medical advice.</div>
+                    <div>Crisis support: 988</div>
+                </div>
+            </div>
+        </nav>
+
+    <script>
+        // Energy type selection functionality
+        document.querySelectorAll('.mood-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.mood-card').forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+            });
+        });
+
+        // Persona selection functionality
+        document.querySelectorAll('.persona-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+            });
+        });
+
+        // Quality selection functionality
+        document.querySelectorAll('input[data-quality]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                // The checkbox state is automatically handled by the browser
+                console.log('Quality checkbox changed:', this.dataset.quality, this.checked);
+            });
+        });
+
+        // Save preferred name only
+        function savePreferredName() {
+            const preferredName = document.getElementById('preferredName').value.trim();
+            
+            if (!preferredName) {
+                alert('Please enter a preferred name.');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('preferredName', preferredName);
+            
+            // Show success message
+            alert('Preferred name saved successfully! Haven will now address you as "' + preferredName + '".');
+            
+            console.log('✅ Preferred name saved:', preferredName);
+        }
+
+        // Save persona settings
+        function savePersonaSettings() {
+            const selectedMood = document.querySelector('.mood-card.selected').getAttribute('data-mood');
+            const selectedQualities = Array.from(document.querySelectorAll('input[data-quality]:checked'))
+                .map(checkbox => checkbox.getAttribute('data-quality'));
+            const preferredName = document.getElementById('preferredName').value;
+
+            // Save to localStorage
+            localStorage.setItem('havenMood', selectedMood);
+            localStorage.setItem('selectedQualities', JSON.stringify(selectedQualities));
+            localStorage.setItem('preferredName', preferredName);
+
+            // Update onboarding data to match
+            const onboardingData = JSON.parse(localStorage.getItem('havenOnboarding') || '{}');
+            onboardingData.mood = selectedMood;
+            onboardingData.qualities = selectedQualities;
+            localStorage.setItem('havenOnboarding', JSON.stringify(onboardingData));
+
+            // Show success message
+            alert('Persona settings saved successfully! Haven will now address you as "' + preferredName + '" with your selected energy type and qualities.');
+        }
+
+        // Load saved settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+
+            
+            // Load energy type from onboarding data or localStorage
+            const onboardingData = JSON.parse(localStorage.getItem('havenOnboarding') || '{}');
+            const savedMood = onboardingData.mood || localStorage.getItem('havenMood') || 'balanced-mix';
+            const savedQualities = onboardingData.qualities || JSON.parse(localStorage.getItem('selectedQualities') || '[]');
+            const savedName = localStorage.getItem('preferredName');
+
+            // Set selected energy type
+            document.querySelectorAll('.mood-card').forEach(card => {
+                const cardMood = card.getAttribute('data-mood');
+                if (cardMood === savedMood) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+
+            if (savedQualities.length > 0) {
+                document.querySelectorAll('input[data-quality]').forEach(checkbox => {
+                    const qualityData = checkbox.getAttribute('data-quality');
+                    if (savedQualities.includes(qualityData)) {
+                        checkbox.checked = true;
+                    } else {
+                        checkbox.checked = false;
+                    }
+                });
+            }
+
+            if (savedName) {
+                const preferredNameElement = document.getElementById('preferredName');
+                if (preferredNameElement) {
+                    preferredNameElement.value = savedName;
+                    console.log('✅ Loaded preferred name:', savedName);
+                } else {
+                    console.log('❌ Preferred name element not found');
+                }
+            } else {
+                console.log('❌ No saved preferred name found');
+            }
+
+            // Update usage statistics
+            updateUsageStats();
+            updatePlanInfo();
+            
+            // Load and display conversation statistics
+            loadConversationStats();
+            loadConversationHistory();
+            
+            // Load and display user email
+            loadUserEmail();
+            
+            // Load subscription and token information
+            loadSubscriptionInfo();
+            loadTokenInfo();
+            
+            // Set up real-time updates every 30 seconds
+            setInterval(() => {
+                loadTokenInfo();
+                loadSubscriptionInfo();
+            }, 30000);
+        });
+
+        // Token Management Functions
+        async function getTokenStatus() {
+            try {
+                const userId = localStorage.getItem('havenUserId') || 'anonymous';
+                const subscriptionData = JSON.parse(localStorage.getItem('havenSubscription') || '{}');
+                
+                // Determine user's plan
+                let userPlan = 'starter';
+                if (subscriptionData.planId) {
+                    if (subscriptionData.planId.includes('starter')) userPlan = 'starter';
+                    else if (subscriptionData.planId.includes('regular')) userPlan = 'regular';
+                    else if (subscriptionData.planId.includes('family')) userPlan = 'family';
+                }
+                
+                const response = await fetch(`/api/tokens?userId=${userId}&plan=${userPlan}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    return data;
+                } else {
+                    console.error('Failed to get token status:', data.error);
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error getting token status:', error);
+                return null;
+            }
+        }
+
+        async function useToken() {
+            try {
+                const userId = localStorage.getItem('havenUserId') || 'anonymous';
+                const subscriptionData = JSON.parse(localStorage.getItem('havenSubscription') || '{}');
+                
+                // Determine user's plan
+                let userPlan = 'starter';
+                if (subscriptionData.planId) {
+                    if (subscriptionData.planId.includes('starter')) userPlan = 'starter';
+                    else if (subscriptionData.planId.includes('regular')) userPlan = 'regular';
+                    else if (subscriptionData.planId.includes('family')) userPlan = 'family';
+                }
+                
+                const response = await fetch('/api/tokens', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        action: 'use',
+                        plan: userPlan
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    return { success: true, tokens: data.tokens };
+                } else if (data.needsTopUp) {
+                    return { success: false, needsTopUp: true };
+                } else {
+                    console.error('Failed to use token:', data.error);
+                    return { success: false, error: data.error };
+                }
+            } catch (error) {
+                console.error('Error using token:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        async function buyEmergencyTokens() {
+            try {
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        planType: 'emergency',
+                        tokens: 100,
+                        price: 299 // $2.99 in cents
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.url) {
+                    // Open checkout in new window
+                    window.open(data.url, '_blank');
+                } else {
+                    alert('Failed to create emergency top-up session. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error creating emergency top-up:', error);
+                alert('Error creating emergency top-up. Please try again.');
+            }
+        }
+
+        function viewTokenHistory() {
+            // This would show detailed token usage history
+            alert('Token history feature coming soon!');
+        }
+
+        // Update usage statistics
+        async function updateUsageStats() {
+            const messageCount = parseInt(localStorage.getItem('havenMessageCount') || 0);
+            const subscriptionData = JSON.parse(localStorage.getItem('havenSubscription') || '{}');
+            const trialCompleted = localStorage.getItem('havenTrialCompleted') || false;
+            
+            // Show tokens for all users (trial and paid)
+            const tokensSection = document.getElementById('tokensSection');
+            tokensSection.style.display = 'block';
+            
+            // Check if user is on free trial (no active subscription or trial not completed)
+            const isOnTrial = !subscriptionData.status || subscriptionData.status !== 'active' || !trialCompleted;
+            
+            if (!isOnTrial) {
+                // Paid user - get token status from API
+                const tokenStatus = await getTokenStatus();
+                if (tokenStatus) {
+                    const tokensRemaining = tokenStatus.tokens;
+                    const planLimit = tokenStatus.limit;
+                    const userPlan = tokenStatus.plan;
+                    
+                    // Update display
+                    document.getElementById('tokensDisplay').textContent = `${tokensRemaining} / ${planLimit}`;
+                    document.getElementById('tokensDescription').textContent = 
+                        `You have ${tokensRemaining} tokens remaining this month.`;
+                    
+                    // Show warning if low on tokens
+                    if (tokensRemaining <= 20) {
+                        document.getElementById('tokensDescription').style.color = '#FF6B8A';
+                        document.getElementById('tokensDescription').textContent += ' Low tokens remaining!';
+                    }
+                    
+                    // Update next reset date
+                    const lastReset = new Date(tokenStatus.lastReset);
+                    const nextReset = new Date(lastReset);
+                    nextReset.setMonth(nextReset.getMonth() + 1);
+                    document.getElementById('nextReset').textContent = nextReset.toLocaleDateString();
+                }
+            } else {
+                // Free trial user - show 12 tokens
+                document.getElementById('tokensDisplay').textContent = `12 / 12`;
+                document.getElementById('tokensDescription').textContent = 
+                    `You have 12 free trial tokens remaining. Upgrade to continue after trial.`;
+                document.getElementById('nextReset').textContent = 'Trial period';
+            }
+        }
+
+        // Update plan information
+        function updatePlanInfo() {
+            const subscriptionData = JSON.parse(localStorage.getItem('havenSubscription') || '{}');
+            const userPlan = subscriptionData.plan || 'starter';
+            
+            const planInfo = {
+                'starter': {
+                    name: 'Starter Plan',
+                    price: '$2.99/month',
+                    features: '300 tokens per month • Basic support • Standard features'
+                },
+                'regular': {
+                    name: 'Regular Plan',
+                    price: '$9.99/month',
+                    features: '1,500 tokens per month • Priority support • Journal access'
+                },
+                'premium': {
+                    name: 'Premium Plan',
+                    price: '$19.99/month',
+                    features: '5,000 tokens per month • Premium support • All features'
+                }
+            };
+            
+            const currentPlan = planInfo[userPlan] || planInfo['starter'];
+            
+            // Update plan card
+            const planCards = document.querySelectorAll('.plan-card');
+            planCards.forEach(card => {
+                card.classList.remove('current');
+                const planName = card.querySelector('.plan-name').textContent;
+                if (planName === currentPlan.name) {
+                    card.classList.add('current');
+                }
+            });
+        }
+
+        // Plan Management Functions
+        async function upgradePlan(planType) {
+            const planNames = {
+                'regular': 'Regular Plan ($9.99/month)',
+                'premium': 'Premium Family Plan ($19.99/month)'
+            };
+            
+            if (confirm(`Upgrade to ${planNames[planType]}?`)) {
+                try {
+                    console.log(`Upgrading to ${planType} plan`);
+                    
+                    const response = await fetch('/api/create-checkout-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ planType: planType })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        console.error('Checkout error:', data.error);
+                        alert('Unable to start checkout. Please try again.');
+                        return;
+                    }
+
+                    if (data.mock) {
+                        alert('Payment system is in demo mode. Redirecting to success page for testing.');
+                        // Redirect to success page for demo
+                        window.location.href = data.url;
+                        return;
+                    }
+
+                    // Redirect to Stripe Checkout
+                    window.location.href = data.url;
+                    
+                } catch (error) {
+                    console.error('Upgrade error:', error);
+                    alert('Something went wrong. Please try again.');
+                }
+            }
+        }
+
+        function downgradePlan(planType) {
+            const planNames = {
+                'starter': 'Starter Plan ($2.99/month)',
+                'regular': 'Regular Plan ($9.99/month)'
+            };
+            
+            if (confirm(`Downgrade to ${planNames[planType]}? Your current plan will remain active until the end of your billing period.`)) {
+                console.log(`Downgrading to ${planType} plan`);
+                alert(`Plan will be changed to ${planNames[planType]} at the end of your current billing period.`);
+            }
+        }
+
+        async function buyMoreMessages() {
+            if (confirm('Buy 100 additional tokens for $2.99?')) {
+                try {
+                    console.log('Buying more tokens');
+                    
+                    const response = await fetch('/api/create-checkout-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ planType: 'emergency' })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        console.error('Checkout error:', data.error);
+                        alert('Unable to start checkout. Please try again.');
+                        return;
+                    }
+
+                    if (data.mock) {
+                        alert('Payment system is in demo mode. Redirecting to success page for testing.');
+                        // Redirect to success page for demo
+                        window.location.href = data.url;
+                        return;
+                    }
+
+                    // Redirect to Stripe Checkout
+                    window.location.href = data.url;
+                    
+                } catch (error) {
+                    console.error('Token purchase error:', error);
+                    alert('Something went wrong. Please try again.');
+                }
+            }
+        }
+
+        function cancelSubscription() {
+            if (confirm('Are you sure you want to cancel your subscription? You will lose access to premium features at the end of your current billing period.')) {
+                console.log('Cancelling subscription');
+                alert('Your subscription has been cancelled. You will have access until the end of your current billing period.');
+            }
+        }
+
+        // Load and display subscription information
+        function loadSubscriptionInfo() {
+            const subscriptionDisplay = document.getElementById('userSubscriptionDisplay');
+            
+            if (!subscriptionDisplay) {
+                console.log('❌ Subscription display element not found');
+                return;
+            }
+            
+            try {
+                // Check for BETA30 first
+                const beta30Active = localStorage.getItem('havenBeta30Active');
+                const beta30StartDate = localStorage.getItem('havenBeta30StartDate');
+                
+                if (beta30Active && beta30StartDate) {
+                    const startDate = new Date(beta30StartDate);
+                    const currentDate = new Date();
+                    const daysElapsed = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24));
+                    const daysRemaining = 30 - daysElapsed;
+                    
+                                        if (daysRemaining > 0) {
+                        subscriptionDisplay.textContent = 'BETA30 - Regular Plan';
+                        console.log('✅ BETA30 subscription loaded:', daysRemaining, 'days remaining');
+                        return;
+                    } else {
+                        // BETA30 expired, remove it
+                        localStorage.removeItem('havenBeta30Active');
+                        localStorage.removeItem('havenBeta30StartDate');
+                    }
+                }
+                
+                // Check regular subscription
+                const subscriptionData = JSON.parse(localStorage.getItem('havenSubscription') || '{}');
+                
+                if (subscriptionData.status === 'active') {
+                    let planName = 'Unknown Plan';
+                    if (subscriptionData.planId) {
+                        if (subscriptionData.planId.includes('starter')) planName = 'Starter Plan';
+                        else if (subscriptionData.planId.includes('regular')) planName = 'Regular Plan';
+                        else if (subscriptionData.planId.includes('family')) planName = 'Family Plan';
+                    }
+                    subscriptionDisplay.textContent = planName;
+                    console.log('✅ Active subscription loaded:', planName);
+                } else {
+                    // Check if trial is active
+                    const trialStarted = localStorage.getItem('havenTrialStarted');
+                    const trialCompleted = localStorage.getItem('havenTrialCompleted');
+                    
+                    if (trialStarted && !trialCompleted) {
+                        subscriptionDisplay.textContent = 'Free Trial Active';
+                        console.log('✅ Free trial active');
+                    } else {
+                        subscriptionDisplay.textContent = 'No Active Subscription';
+                        console.log('❌ No active subscription');
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Error loading subscription info:', error);
+                subscriptionDisplay.textContent = 'Error Loading Subscription';
+            }
+        }
+
+        // Load and display token information with usage stats
+        async function loadTokenInfo() {
+            const tokenDisplay = document.getElementById('userTokensDisplay');
+            
+            if (!tokenDisplay) {
+                console.log('❌ Token display element not found');
+                return;
+            }
+            
+            try {
+                const userId = localStorage.getItem('havenUserId') || 'anonymous';
+                const subscriptionData = JSON.parse(localStorage.getItem('havenSubscription') || '{}');
+                
+                // Determine user's plan
+                let userPlan = 'starter';
+                const beta30Active = localStorage.getItem('havenBeta30Active');
+                if (beta30Active) {
+                    userPlan = 'regular';
+                } else if (subscriptionData.planId) {
+                    if (subscriptionData.planId.includes('starter')) userPlan = 'starter';
+                    else if (subscriptionData.planId.includes('regular')) userPlan = 'regular';
+                    else if (subscriptionData.planId.includes('family')) userPlan = 'family';
+                }
+                
+                // Get token status from API
+                const response = await fetch(`/api/tokens?userId=${userId}&plan=${userPlan}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const tokensRemaining = data.tokens;
+                    const totalTokensUsed = parseInt(localStorage.getItem('havenTotalTokensUsed') || 0);
+                    
+                    // Display token count only
+                    tokenDisplay.textContent = `${tokensRemaining} tokens`;
+                    
+                    console.log('✅ Token info loaded:', tokensRemaining, 'remaining,', totalTokensUsed, 'used');
+                } else {
+                    tokenDisplay.textContent = 'Error Loading Tokens';
+                    console.log('❌ Failed to load tokens:', data.error);
+                }
+            } catch (error) {
+                console.error('❌ Error loading token info:', error);
+                tokenDisplay.textContent = 'Error Loading Tokens';
+            }
+        }
+
+        // Load and display user email and name
+        function loadUserEmail() {
+            const userEmail = localStorage.getItem('havenUserEmail');
+            const userName = localStorage.getItem('preferredName');
+            const emailDisplay = document.getElementById('userEmailDisplay');
+            const nameInput = document.getElementById('preferredName');
+            
+            if (emailDisplay) {
+                if (userEmail) {
+                    emailDisplay.textContent = userEmail;
+                    console.log('✅ Loaded user email:', userEmail);
+                } else {
+                    emailDisplay.textContent = 'No email set';
+                    console.log('❌ No user email found');
+                }
+            } else {
+                console.log('❌ Email display element not found');
+            }
+            
+            // Also load the name into the preferred name field if it exists
+            if (nameInput && userName) {
+                nameInput.value = userName;
+                console.log('✅ Loaded user name from signup:', userName);
+            }
+        }
+
+        // Load more conversations function
+        function loadMoreConversations() {
+            const savedConversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            const container = document.getElementById('conversationHistoryContainer');
+            
+            // Sort conversations by timestamp (newest first)
+            savedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Get current number of displayed conversations
+            const currentDisplayed = container.querySelectorAll('.conversation-item').length;
+            const nextBatch = savedConversations.slice(currentDisplayed, currentDisplayed + 10);
+            const hasMoreAfterThis = savedConversations.length > currentDisplayed + 10;
+            
+            // Add the next batch of conversations
+            nextBatch.forEach(conv => {
+                const date = new Date(conv.timestamp);
+                const timeAgo = getTimeAgo(date);
+                
+                // Create preview from title or first message
+                const preview = conv.title || (conv.messages && conv.messages[0] ? conv.messages[0].content.substring(0, 100) + '...' : 'Conversation');
+                
+                const saveType = conv.isSaved ? 'Manually Saved' : 'Auto-saved from Chat';
+                const saveTypeColor = conv.isSaved ? '#28a745' : '#FF6B8A';
+                
+                const conversationDiv = document.createElement('div');
+                conversationDiv.className = 'conversation-item';
+                conversationDiv.innerHTML = `
+                    <div class="conversation-date">${timeAgo}</div>
+                    <div class="conversation-preview">"${preview}"</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                        <div style="
+                            background: ${saveTypeColor};
+                            color: white;
+                            padding: 4px 8px;
+                            border-radius: 10px;
+                            font-size: 0.7em;
+                            font-weight: bold;
+                        ">${saveType}</div>
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="loadConversation(${conv.id})" style="
+                                background: #FF6B8A;
+                                color: white;
+                                border: none;
+                                padding: 8px 12px;
+                                border-radius: 15px;
+                                font-size: 0.8em;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            ">📖 Load</button>
+                            <button onclick="deleteConversation(${conv.id})" style="
+                                background: #ff4757;
+                                color: white;
+                                border: none;
+                                padding: 8px 12px;
+                                border-radius: 15px;
+                                font-size: 0.8em;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            ">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                // Insert before the "Load More" button
+                const loadMoreButton = container.querySelector('button[onclick="loadMoreConversations()"]');
+                if (loadMoreButton) {
+                    loadMoreButton.parentElement.parentElement.insertBefore(conversationDiv, loadMoreButton.parentElement);
+                } else {
+                    container.appendChild(conversationDiv);
+                }
+            });
+            
+            // Update or remove the "Load More" button
+            const loadMoreButton = container.querySelector('button[onclick="loadMoreConversations()"]');
+            if (loadMoreButton) {
+                if (hasMoreAfterThis) {
+                    loadMoreButton.textContent = `Load More Conversations (${savedConversations.length - (currentDisplayed + 10)} remaining)`;
+                } else {
+                    loadMoreButton.parentElement.remove();
+                }
+            }
+        }
+
+        // Load and display saved conversation statistics
+        function loadConversationStats() {
+            // Always calculate from current saved conversations to ensure sync
+                const savedConversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+                
+                // Calculate total conversations
+                const totalConversations = savedConversations.length;
+                
+                // Calculate this week's conversations
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                const thisWeekConversations = savedConversations.filter(conv => 
+                    new Date(conv.timestamp) > oneWeekAgo
+                ).length;
+                
+                // Calculate average duration
+                let avgDuration = 0;
+                if (savedConversations.length > 0) {
+                    const totalDuration = savedConversations.reduce((sum, conv) => sum + (conv.duration || 0), 0);
+                    avgDuration = Math.round((totalDuration / savedConversations.length) * 10) / 10;
+                }
+                
+                // Calculate days active
+                const uniqueDates = new Set();
+                savedConversations.forEach(conv => {
+                    const date = new Date(conv.timestamp).toDateString();
+                    uniqueDates.add(date);
+                });
+                const daysActive = uniqueDates.size;
+                
+                // Update display
+                document.getElementById('totalConversations').textContent = totalConversations;
+                document.getElementById('thisWeekConversations').textContent = thisWeekConversations;
+                document.getElementById('avgDuration').textContent = avgDuration;
+                document.getElementById('daysActive').textContent = daysActive;
+            
+            console.log('📊 Stats updated - Total conversations:', totalConversations);
+        }
+
+        // Load and display saved conversations
+        function loadConversationHistory() {
+            const savedConversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            // Show all conversations (both auto-saved and manually saved)
+            const container = document.getElementById('conversationHistoryContainer');
+            
+            if (savedConversations.length === 0) {
+                container.innerHTML = `
+                    <div class="conversation-item" style="text-align: center; color: #666; padding: 40px 20px;">
+                        <div>No saved conversations yet. Start chatting with Haven and save your conversations to see your history here!</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort conversations by timestamp (newest first)
+            savedConversations.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            // Show first 10 conversations initially, or all if less than 10
+            const conversationsToShow = savedConversations.slice(0, 10);
+            const hasMoreConversations = savedConversations.length > 10;
+            
+            container.innerHTML = conversationsToShow.map(conv => {
+                const date = new Date(conv.timestamp);
+                const timeAgo = getTimeAgo(date);
+                
+                // Create preview from title or first message
+                const preview = conv.title || (conv.messages && conv.messages[0] ? conv.messages[0].content.substring(0, 100) + '...' : 'Conversation');
+                
+                // Generate tags HTML
+                const tagsHtml = conv.tags && conv.tags.length > 0 ? 
+                    conv.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : 
+                    '<span class="tag">General</span>';
+                
+                const saveType = conv.isSaved ? 'Manually Saved' : 'Auto-saved from Chat';
+                const saveTypeColor = conv.isSaved ? '#28a745' : '#FF6B8A';
+                
+                return `
+                    <div class="conversation-item">
+                        <div class="conversation-date">${timeAgo}</div>
+                        <div class="conversation-preview">"${preview}"</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                            <div style="
+                                background: ${saveTypeColor};
+                                color: white;
+                                padding: 4px 8px;
+                                border-radius: 10px;
+                                font-size: 0.7em;
+                                font-weight: bold;
+                            ">${saveType}</div>
+                            <div style="display: flex; gap: 5px;">
+                                <button onclick="loadConversation(${conv.id})" style="
+                                    background: #FF6B8A;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 12px;
+                                    border-radius: 15px;
+                                    font-size: 0.8em;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                ">📖 Load</button>
+                                <button onclick="deleteConversation(${conv.id})" style="
+                                    background: #ff4757;
+                                    color: white;
+                                    border: none;
+                                    padding: 8px 12px;
+                                    border-radius: 15px;
+                                    font-size: 0.8em;
+                                    cursor: pointer;
+                                    transition: all 0.3s ease;
+                                ">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Add "Load More" button if there are more conversations
+            if (hasMoreConversations) {
+                container.innerHTML += `
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button onclick="loadMoreConversations()" style="
+                            background: #FF6B8A;
+                            color: white;
+                            border: none;
+                            padding: 12px 25px;
+                            border-radius: 15px;
+                            font-size: 1em;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        " onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                            Load More Conversations (${savedConversations.length - 10} remaining)
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+                // Helper function to format time ago
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInMs = now - date;
+            const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+            const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            
+            if (diffInMinutes < 1) return 'Just now';
+            if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+            if (diffInHours < 24) return `${diffInHours} hours ago`;
+            if (diffInDays === 1) return 'Yesterday';
+            if (diffInDays < 7) return `${diffInDays} days ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        // Enhanced Export and Tracking Functions
+        function exportConversationData() {
+            const conversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            if (conversations.length === 0) {
+                alert('No conversation history to export.');
+                return;
+            }
+            
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                totalConversations: conversations.length,
+                conversations: conversations,
+                exportType: 'full_conversation_history'
+            };
+            
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `haven-conversations-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            alert('Conversation history exported successfully!');
+        }
+
+        function exportConversationStats() {
+            const stats = JSON.parse(localStorage.getItem('havenConversationStats') || '{}');
+            const conversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            
+            // Enhanced stats with analytics
+            const enhancedStats = {
+                exportDate: new Date().toISOString(),
+                basicStats: stats,
+                analytics: {
+                    totalConversations: conversations.length,
+                    averageResponseLength: calculateAverageResponseLength(conversations),
+                    mostCommonTags: getMostCommonTags(conversations),
+                    conversationTrends: getConversationTrends(conversations),
+                    emotionalPatterns: analyzeEmotionalPatterns(conversations),
+                    timeOfDayPatterns: analyzeTimePatterns(conversations),
+                    weeklyActivity: getWeeklyActivity(conversations)
+                }
+            };
+            
+            const dataStr = JSON.stringify(enhancedStats, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `haven-stats-${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            alert('Enhanced statistics exported successfully!');
+        }
+
+        function clearConversationData() {
+            if (confirm('Are you sure you want to clear all conversation data? This action cannot be undone.')) {
+                if (confirm('This will permanently delete all your conversation history and statistics. Are you absolutely sure?')) {
+                    localStorage.removeItem('havenConversations');
+                    localStorage.removeItem('havenConversationStats');
+                    localStorage.removeItem('havenConversationsBackup');
+                    localStorage.removeItem('havenBackupDate');
+                    alert('All conversation data has been cleared.');
+                    location.reload(); // Refresh page to update display
+                }
+            }
+        }
+
+        // Analytics Helper Functions
+        function calculateAverageResponseLength(conversations) {
+            if (conversations.length === 0) return 0;
+            const totalLength = conversations.reduce((sum, conv) => sum + (conv.aiResponse?.length || 0), 0);
+            return Math.round(totalLength / conversations.length);
+        }
+
+        function getMostCommonTags(conversations) {
+            const tagCounts = {};
+            conversations.forEach(conv => {
+                if (conv.tags) {
+                    conv.tags.forEach(tag => {
+                        tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+                    });
+                }
+            });
+            
+            return Object.entries(tagCounts)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 10)
+                .map(([tag, count]) => ({ tag, count }));
+        }
+
+        function getConversationTrends(conversations) {
+            const dailyCounts = {};
+            conversations.forEach(conv => {
+                const date = new Date(conv.timestamp).toDateString();
+                dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+            });
+            
+            return Object.entries(dailyCounts)
+                .sort(([a], [b]) => new Date(a) - new Date(b))
+                .map(([date, count]) => ({ date, count }));
+        }
+
+        function analyzeEmotionalPatterns(conversations) {
+            const emotionalTags = ['Stress', 'Sadness', 'Anger', 'Joy', 'Anxiety', 'Depression'];
+            const patterns = {};
+            
+            emotionalTags.forEach(emotion => {
+                const conversationsWithEmotion = conversations.filter(conv => 
+                    conv.tags && conv.tags.includes(emotion)
+                );
+                patterns[emotion] = conversationsWithEmotion.length;
+            });
+            
+            return patterns;
+        }
+
+        function analyzeTimePatterns(conversations) {
+            const timeSlots = {
+                'Morning (6AM-12PM)': 0,
+                'Afternoon (12PM-6PM)': 0,
+                'Evening (6PM-12AM)': 0,
+                'Night (12AM-6AM)': 0
+            };
+            
+            conversations.forEach(conv => {
+                const hour = new Date(conv.timestamp).getHours();
+                if (hour >= 6 && hour < 12) timeSlots['Morning (6AM-12PM)']++;
+                else if (hour >= 12 && hour < 18) timeSlots['Afternoon (12PM-6PM)']++;
+                else if (hour >= 18 && hour < 24) timeSlots['Evening (6PM-12AM)']++;
+                else timeSlots['Night (12AM-6AM)']++;
+            });
+            
+            return timeSlots;
+        }
+
+        function getWeeklyActivity(conversations) {
+            const weeklyData = {
+                'Sunday': 0, 'Monday': 0, 'Tuesday': 0, 'Wednesday': 0,
+                'Thursday': 0, 'Friday': 0, 'Saturday': 0
+            };
+            
+            conversations.forEach(conv => {
+                const day = new Date(conv.timestamp).toLocaleDateString('en-US', { weekday: 'long' });
+                weeklyData[day]++;
+            });
+            
+            return weeklyData;
+        }
+
+        // Analytics Display Functions
+        function showAnalytics() {
+            const conversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            const container = document.getElementById('analyticsContainer');
+            
+            if (conversations.length === 0) {
+                container.innerHTML = '<p>No conversation data available for analytics.</p>';
+                container.style.display = 'block';
+                return;
+            }
+
+            const analytics = {
+                totalConversations: conversations.length,
+                averageResponseLength: calculateAverageResponseLength(conversations),
+                mostCommonTags: getMostCommonTags(conversations),
+                averageUserMessageLength: Math.round(conversations.reduce((sum, conv) => sum + (conv.userMessageLength || 0), 0) / conversations.length),
+                totalWords: conversations.reduce((sum, conv) => sum + (conv.userMessage?.split(' ').length || 0) + (conv.aiResponse?.split(' ').length || 0), 0),
+                averageDuration: Math.round(conversations.reduce((sum, conv) => sum + (conv.duration || 0), 0) / conversations.length * 10) / 10
+            };
+
+            container.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h3 style="color: #FF6B8A; margin-bottom: 15px;">📊 Conversation Analytics</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #FF6B8A;">${analytics.totalConversations}</div>
+                            <div style="color: #666;">Total Conversations</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #FF6B8A;">${analytics.averageResponseLength}</div>
+                            <div style="color: #666;">Avg Response Length</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #FF6B8A;">${analytics.averageUserMessageLength}</div>
+                            <div style="color: #666;">Avg Message Length</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #FF6B8A;">${analytics.totalWords}</div>
+                            <div style="color: #666;">Total Words</div>
+                        </div>
+                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                            <div style="font-size: 24px; font-weight: bold; color: #FF6B8A;">${analytics.averageDuration}</div>
+                            <div style="color: #666;">Avg Duration (min)</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #333; margin-bottom: 10px;">Most Common Topics:</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            ${analytics.mostCommonTags.map(tag => 
+                                `<span style="background: #FFD93D; color: #333; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                                    ${tag.tag} (${tag.count})
+                                </span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.style.display = 'block';
+        }
+
+        function showEmotionalPatterns() {
+            const conversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            const container = document.getElementById('analyticsContainer');
+            
+            if (conversations.length === 0) {
+                container.innerHTML = '<p>No conversation data available for emotional analysis.</p>';
+                container.style.display = 'block';
+                return;
+            }
+
+            const patterns = analyzeEmotionalPatterns(conversations);
+            const totalEmotional = Object.values(patterns).reduce((sum, count) => sum + count, 0);
+
+            container.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h3 style="color: #FF6B8A; margin-bottom: 15px;">💭 Emotional Patterns</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                        ${Object.entries(patterns).map(([emotion, count]) => {
+                            const percentage = totalEmotional > 0 ? Math.round((count / totalEmotional) * 100) : 0;
+                            return `
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 20px; font-weight: bold; color: #FF6B8A;">${count}</div>
+                                    <div style="color: #666; font-size: 12px;">${emotion}</div>
+                                    <div style="color: #999; font-size: 10px;">${percentage}%</div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `;
+            container.style.display = 'block';
+        }
+
+        function showTimePatterns() {
+            const conversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            const container = document.getElementById('analyticsContainer');
+            
+            if (conversations.length === 0) {
+                container.innerHTML = '<p>No conversation data available for time analysis.</p>';
+                container.style.display = 'block';
+                return;
+            }
+
+            const timePatterns = analyzeTimePatterns(conversations);
+            const weeklyActivity = getWeeklyActivity(conversations);
+
+            container.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h3 style="color: #FF6B8A; margin-bottom: 15px;">⏰ Time Patterns</h3>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #333; margin-bottom: 10px;">Time of Day:</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                            ${Object.entries(timePatterns).map(([timeSlot, count]) => `
+                                <div style="background: #f8f9fa; padding: 10px; border-radius: 6px;">
+                                    <div style="font-weight: bold; color: #333;">${timeSlot}</div>
+                                    <div style="color: #666;">${count} conversations</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: #333; margin-bottom: 10px;">Weekly Activity:</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px;">
+                            ${Object.entries(weeklyActivity).map(([day, count]) => `
+                                <div style="background: #f8f9fa; padding: 8px; border-radius: 6px; text-align: center;">
+                                    <div style="font-weight: bold; color: #333; font-size: 12px;">${day}</div>
+                                    <div style="color: #666; font-size: 10px;">${count}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.style.display = 'block';
+        }
+
+        function saveHistory() {
+            const conversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            if (conversations.length === 0) {
+                alert('No conversation history to save.');
+                return;
+            }
+            
+            // Simulate cloud save
+            localStorage.setItem('havenConversationsBackup', JSON.stringify(conversations));
+            localStorage.setItem('havenBackupDate', new Date().toISOString());
+            
+            alert('Conversation history saved to cloud successfully!');
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all conversation history? This action cannot be undone.')) {
+                if (confirm('This will permanently delete all your conversation history. Are you absolutely sure?')) {
+                    localStorage.removeItem('havenConversations');
+                    localStorage.removeItem('havenConversationsBackup');
+                    alert('All conversation history has been cleared.');
+                    location.reload(); // Refresh page to update display
+                }
+            }
+        }
+
+        // Account Settings Functions
+        function loadAccountSettings() {
+            const saveModeSelect = document.getElementById('accountSaveModeSelect');
+            const currentMode = localStorage.getItem('havenConversationSaveMode') || 'manual';
+            saveModeSelect.value = currentMode;
+        }
+
+        function saveAccountSettings() {
+            const saveModeSelect = document.getElementById('accountSaveModeSelect');
+            const selectedMode = saveModeSelect.value;
+            const saveBtn = document.getElementById('accountSaveSettingsBtn');
+            
+            localStorage.setItem('havenConversationSaveMode', selectedMode);
+            
+            // Show confirmation
+            saveBtn.textContent = 'Saved!';
+            saveBtn.style.background = '#4CAF50';
+            setTimeout(() => {
+                saveBtn.textContent = 'Save Settings';
+                saveBtn.style.background = '#FF6B8A';
+            }, 2000);
+
+            console.log(`Account conversation save mode updated to: ${selectedMode}`);
+        }
+
+        // Initialize account settings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAccountSettings();
+            loadSavedConversations();
+            loadUserTokens(); // Load user's actual token count
+        });
+
+        // Load user's actual token count and subscription from API
+        async function loadUserTokens() {
+            try {
+                const userId = localStorage.getItem('havenUserId') || 'anonymous';
+                const subscriptionData = JSON.parse(localStorage.getItem('havenSubscription') || '{}');
+                const trialCompleted = localStorage.getItem('havenTrialCompleted') || false;
+                
+                // Load and display subscription information
+                const subscriptionDisplay = document.getElementById('userSubscriptionDisplay');
+                
+                // Default to free trial for new users
+                if (!subscriptionData || Object.keys(subscriptionData).length === 0) {
+                    subscriptionDisplay.textContent = 'Free Trial (12 tokens)';
+                    
+                    // Show 12 tokens for free trial users
+                    const tokensDisplay = document.getElementById('userTokensDisplay');
+                    tokensDisplay.textContent = '12 tokens';
+                    
+                    // Update the tokens info section for trial users
+                    const tokensInfo = document.querySelector('.tokens-info');
+                    if (tokensInfo) {
+                        tokensInfo.innerHTML = `
+                            <div style="margin-bottom: 5px;">• Each conversation uses approximately 10-30 tokens</div>
+                            <div style="margin-bottom: 5px;">• You have enough tokens for about 1-2 more conversations</div>
+                            <div style="margin-bottom: 15px;">• Upgrade to continue after your free trial</div>
+                        `;
+                    }
+                    return;
+                }
+                
+                if (subscriptionData.status === 'active' && trialCompleted) {
+                    // Paid user
+                    let planName = 'Starter Plan';
+                    let planPrice = '$2.99/month';
+                    
+                    if (subscriptionData.planId) {
+                        if (subscriptionData.planId.includes('starter')) {
+                            planName = 'Starter Plan';
+                            planPrice = '$2.99/month';
+                        } else if (subscriptionData.planId.includes('regular')) {
+                            planName = 'Regular Plan';
+                            planPrice = '$9.99/month';
+                        } else if (subscriptionData.planId.includes('family')) {
+                            planName = 'Premium Family Plan';
+                            planPrice = '$19.99/month';
+                        }
+                    }
+                    
+                    subscriptionDisplay.textContent = `${planName} (${planPrice})`;
+                } else {
+                    // Free trial user
+                    subscriptionDisplay.textContent = 'Free Trial (12 tokens)';
+                }
+                
+                // Check if user is on trial or paid
+                if (subscriptionData.status === 'active' && trialCompleted) {
+                    // Paid user - get from API
+                    let userPlan = 'starter';
+                    if (subscriptionData.planId) {
+                        if (subscriptionData.planId.includes('starter')) userPlan = 'starter';
+                        else if (subscriptionData.planId.includes('regular')) userPlan = 'regular';
+                        else if (subscriptionData.planId.includes('family')) userPlan = 'family';
+                    }
+                    
+                    const response = await fetch(`/api/tokens?userId=${userId}&plan=${userPlan}`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        const tokensDisplay = document.getElementById('userTokensDisplay');
+                        tokensDisplay.textContent = `${data.tokens.toLocaleString()} tokens`;
+                        
+                        // Update the tokens info section with real data
+                        const tokensInfo = document.querySelector('.tokens-info');
+                        if (tokensInfo) {
+                            const conversationsLeft = Math.floor(data.tokens / 20); // Assuming 20 tokens per conversation average (10-30 range)
+                            tokensInfo.innerHTML = `
+                                <div style="margin-bottom: 5px;">• Each conversation uses approximately 10-30 tokens</div>
+                                <div style="margin-bottom: 5px;">• You have enough tokens for about ${conversationsLeft} more conversations</div>
+                                <div style="margin-bottom: 15px;">• Tokens refresh monthly with your subscription</div>
+                            `;
+                        }
+                    } else {
+                        console.error('Failed to load user tokens:', data.error);
+                        document.getElementById('userTokensDisplay').textContent = 'Error loading tokens';
+                    }
+                } else {
+                    // Free trial user - show 12 tokens
+                    const tokensDisplay = document.getElementById('userTokensDisplay');
+                    tokensDisplay.textContent = '12 tokens';
+                    
+                    // Update the tokens info section for trial users
+                    const tokensInfo = document.querySelector('.tokens-info');
+                    if (tokensInfo) {
+                        tokensInfo.innerHTML = `
+                            <div style="margin-bottom: 5px;">• Each conversation uses approximately 10-30 tokens</div>
+                            <div style="margin-bottom: 5px;">• You have enough tokens for about 1-2 more conversations</div>
+                            <div style="margin-bottom: 15px;">• Upgrade to continue after your free trial</div>
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user tokens:', error);
+                document.getElementById('userTokensDisplay').textContent = 'Error loading tokens';
+                document.getElementById('userSubscriptionDisplay').textContent = 'Error loading subscription';
+            }
+        }
+
+
+        
+
+        
+
+        
+
+        
+        // Saved Conversations Functions
+        function loadSavedConversations() {
+            const savedConversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            // Show all conversations (both auto-saved and manually saved)
+            const conversationsList = document.getElementById('savedConversationsList');
+            const noConversationsMessage = document.getElementById('noConversationsMessage');
+            
+            if (savedConversations.length === 0) {
+                conversationsList.style.display = 'none';
+                noConversationsMessage.style.display = 'block';
+                return;
+            }
+            
+            conversationsList.style.display = 'block';
+            noConversationsMessage.style.display = 'none';
+            
+            conversationsList.innerHTML = '';
+            
+            savedConversations.forEach(conversation => {
+                const conversationDiv = document.createElement('div');
+                conversationDiv.style.cssText = `
+                    background: white;
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin-bottom: 10px;
+                    border: 1px solid #eee;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                `;
+                
+                const saveType = conversation.isSaved ? 'Manually Saved' : 'Auto-saved from Chat';
+                const saveTypeColor = conversation.isSaved ? '#28a745' : '#FF6B8A';
+                
+                conversationDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; color: #333; margin-bottom: 5px;">
+                                ${conversation.title}
+                            </div>
+                            <div style="font-size: 0.9em; color: #666;">
+                                ${conversation.messages.length} messages • ${new Date(conversation.timestamp).toLocaleDateString()}
+                            </div>
+                            <div style="
+                                background: ${saveTypeColor};
+                                color: white;
+                                padding: 2px 6px;
+                                border-radius: 8px;
+                                font-size: 0.6em;
+                                font-weight: bold;
+                                display: inline-block;
+                                margin-top: 4px;
+                            ">${saveType}</div>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button onclick="loadConversation(${conversation.id})" style="
+                                background: #FF6B8A;
+                                color: white;
+                                border: none;
+                                padding: 8px 12px;
+                                border-radius: 15px;
+                                font-size: 0.8em;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            ">📖 Load</button>
+                            <button onclick="deleteConversation(${conversation.id})" style="
+                                background: #ff4757;
+                                color: white;
+                                border: none;
+                                padding: 8px 12px;
+                                border-radius: 15px;
+                                font-size: 0.8em;
+                                cursor: pointer;
+                                transition: all 0.3s ease;
+                            ">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `;
+                
+                conversationDiv.addEventListener('mouseenter', () => {
+                    conversationDiv.style.transform = 'translateY(-2px)';
+                    conversationDiv.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                });
+                
+                conversationDiv.addEventListener('mouseleave', () => {
+                    conversationDiv.style.transform = 'none';
+                    conversationDiv.style.boxShadow = 'none';
+                });
+                
+                conversationsList.appendChild(conversationDiv);
+            });
+        }
+        
+        function loadConversation(conversationId) {
+            // Show conversation in modal
+            const savedConversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+            // Show all conversations (both auto-saved and manually saved)
+            const conversation = savedConversations.find(conv => conv.id === conversationId);
+            
+            if (conversation) {
+                showConversationModal(conversation);
+            }
+        }
+        
+        function showConversationModal(conversation) {
+            // Create modal
+            const modal = document.createElement('div');
+            modal.id = 'conversationModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            `;
+            
+            // Create conversation content
+            let conversationHTML = `
+                <div style="
+                    background: white;
+                    border-radius: 20px;
+                    max-width: 800px;
+                    width: 90%;
+                    max-height: 80vh;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+                ">
+                    <div style="
+                        background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+                        color: white;
+                        padding: 20px 30px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    ">
+                        <h2 style="margin: 0; font-size: 1.5em;">${conversation.title}</h2>
+                        <button onclick="closeConversationModal()" style="
+                            background: none;
+                            border: none;
+                            color: white;
+                            font-size: 1.5em;
+                            cursor: pointer;
+                            padding: 5px;
+                        ">×</button>
+                    </div>
+                    <div style="
+                        padding: 20px 30px;
+                        overflow-y: auto;
+                        flex: 1;
+                        max-height: 60vh;
+                    ">
+                        <div style="
+                            color: #666;
+                            font-size: 0.9em;
+                            margin-bottom: 20px;
+                            padding-bottom: 15px;
+                            border-bottom: 1px solid #eee;
+                        ">
+                            ${new Date(conversation.timestamp).toLocaleString()} • ${conversation.messages.length} messages
+                        </div>
+            `;
+            
+            // Add each message
+            conversation.messages.forEach(message => {
+                const isUser = message.role === 'user';
+                conversationHTML += `
+                    <div style="
+                        margin-bottom: 15px;
+                        padding: 15px;
+                        border-radius: 15px;
+                        ${isUser ? 
+                            'background: #FF6B8A; color: white; margin-left: 20px;' : 
+                            'background: #f8f9fa; color: #333; margin-right: 20px;'
+                        }
+                    ">
+                        <div style="font-weight: 600; margin-bottom: 5px;">
+                            ${isUser ? 'You' : 'Haven'}
+                        </div>
+                        <div style="line-height: 1.5;">
+                            ${message.content}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            conversationHTML += `
+                    </div>
+                </div>
+            `;
+            
+            modal.innerHTML = conversationHTML;
+            document.body.appendChild(modal);
+        }
+        
+        function closeConversationModal() {
+            const modal = document.getElementById('conversationModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Global delete conversation function
+        window.deleteConversation = function(conversationId) {
+            console.log('🗑️ Delete function called with ID:', conversationId);
+            
+            if (confirm('Are you sure you want to delete this conversation? This action cannot be undone.')) {
+                console.log('🗑️ User confirmed deletion');
+                
+                const savedConversations = JSON.parse(localStorage.getItem('havenConversations') || '[]');
+                console.log('🗑️ Current conversations count:', savedConversations.length);
+                
+                // Show all conversations (both auto-saved and manually saved)
+                const updatedConversations = savedConversations.filter(conv => conv.id !== conversationId);
+                console.log('🗑️ Updated conversations count:', updatedConversations.length);
+                
+                localStorage.setItem('havenConversations', JSON.stringify(updatedConversations));
+                console.log('🗑️ localStorage updated');
+                
+                // Reload conversation sections
+                loadConversationHistory();
+                loadConversationStats();
+                
+                console.log('🗑️ Conversation deleted successfully:', conversationId);
+            } else {
+                console.log('🗑️ User cancelled deletion');
+            }
+        };
+        
+        // Global load more conversations function
+        window.loadMoreConversations = loadMoreConversations;
+    </script>
+</body>
+</html> 

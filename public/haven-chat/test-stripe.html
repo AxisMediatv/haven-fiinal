@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Test - Haven</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #FF6B8A;
+            margin-bottom: 20px;
+        }
+        
+        .test-button {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        
+        .test-button:hover {
+            background: #e55a7a;
+            transform: translateY(-2px);
+        }
+        
+        .log-area {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Stripe Integration Test</h1>
+        <p>Testing the beta plan payment flow...</p>
+        
+        <button class="test-button" onclick="testBetaPlan()">Test Beta Plan ($1.99)</button>
+        <button class="test-button" onclick="clearLogs()">Clear Logs</button>
+        
+        <div id="status"></div>
+        <div class="log-area" id="logs"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            logs.innerHTML += `[${timestamp}] ${message}\n`;
+            logs.scrollTop = logs.scrollHeight;
+            console.log(message);
+        }
+        
+        function showStatus(message, type = 'success') {
+            const status = document.getElementById('status');
+            status.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            document.getElementById('status').innerHTML = '';
+        }
+        
+        async function testBetaPlan() {
+            try {
+                log('Starting beta plan test...');
+                showStatus('Creating checkout session...', 'success');
+                
+                log('Making API call to /api/create-checkout-session');
+                const response = await fetch('/api/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ planType: 'beta' })
+                });
+                
+                log(`Response status: ${response.status}`);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log(`HTTP Error: ${response.status} - ${errorText}`);
+                    showStatus(`HTTP Error: ${response.status}`, 'error');
+                    return;
+                }
+                
+                const data = await response.json();
+                log(`Response data: ${JSON.stringify(data, null, 2)}`);
+                
+                if (data.error) {
+                    log(`Stripe Error: ${data.error}`);
+                    showStatus(`Stripe Error: ${data.error}`, 'error');
+                    return;
+                }
+                
+                if (!data.url) {
+                    log('No checkout URL received');
+                    showStatus('No checkout URL received', 'error');
+                    return;
+                }
+                
+                log(`Checkout URL: ${data.url}`);
+                showStatus('Opening Stripe checkout in new window...', 'success');
+                
+                // Wait a moment to show the success message
+                setTimeout(() => {
+                    log('Opening Stripe checkout in new window...');
+                    window.open(data.url, '_blank');
+                }, 1000);
+                
+            } catch (error) {
+                log(`JavaScript Error: ${error.message}`);
+                showStatus(`JavaScript Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Log page load
+        log('Stripe test page loaded');
+    </script>
+</body>
+</html> 

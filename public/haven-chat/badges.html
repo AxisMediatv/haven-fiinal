@@ -1,0 +1,2867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badges & Rewards - Haven</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #333;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 98%;
+            margin: 0 auto;
+            padding: 0 1px;
+            padding-bottom: 120px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+            color: white;
+            padding: 20px 15px;
+            border-radius: 15px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats-overview {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 138, 0.15);
+            border: 2px solid #FFD93D;
+        }
+
+        .view-collection-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 107, 138, 0.3);
+            border: 2px solid white;
+        }
+
+        .view-collection-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 107, 138, 0.4);
+            background: linear-gradient(135deg, #E8447A 0%, #FF8C42 100%);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FF6B8A;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .badges-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #FF6B8A;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+        @media (min-width: 1200px) {
+            .badges-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        @media (min-width: 900px) and (max-width: 1199px) {
+            .badges-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .badge-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 107, 138, 0.15);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px solid transparent;
+        }
+
+        .badge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 107, 138, 0.2);
+            border: 2px solid #FF6B8A;
+        }
+
+        .badge-card.earned {
+            border: 3px solid #E8447A;
+            background: linear-gradient(135deg, rgba(232, 68, 122, 0.1) 0%, rgba(255, 255, 255, 1) 100%);
+        }
+
+        .badge-card.locked {
+            /* Removed opacity and grayscale to show rarity colors */
+            border: 2px solid #FF9A8B;
+        }
+
+        .premium-badge {
+            position: relative;
+        }
+
+        .premium-lock {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+            color: #FFD93D;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        .premium-badge .badge-card {
+            opacity: 0.8;
+        }
+
+        .premium-badge:hover .premium-lock {
+            transform: scale(1.1);
+            transition: transform 0.3s ease;
+        }
+
+        .badge-icon {
+            font-size: 1.75rem;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .badge-name {
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .badge-description {
+            color: #666;
+            font-size: 0.6rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .badge-progress {
+            background: #f0f0f0;
+            height: 6px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .badge-progress-fill {
+            background: linear-gradient(90deg, #FF6B8A 0%, #FF9A8B 100%);
+            height: 100%;
+            border-radius: 15px;
+            transition: width 0.3s ease;
+        }
+
+        .badge-details {
+            margin-top: auto;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+            flex-shrink: 0;
+        }
+
+        .badge-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.65rem;
+            color: #666;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+
+        .badge-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .share-button {
+            background: #FF8C42;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 140, 66, 0.3);
+        }
+
+        .share-badge-btn {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .share-badge-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 138, 0.3);
+            background: #E8447A;
+        }
+
+        .badge-earned-date {
+            font-size: 0.6rem;
+            color: #E8447A;
+            margin-top: 10px;
+        }
+
+        .badge-status {
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+
+        .badge-status.earned {
+            color: #E8447A;
+        }
+
+        .badge-status.locked {
+            color: #666;
+        }
+
+        .badge-status.progress {
+            color: #FF8C42;
+        }
+
+        .streak-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .streak-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .calendar-day.active {
+            background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+            color: white;
+        }
+
+        .calendar-day.inactive {
+            background: #f0f0f0;
+            color: #999;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #FF6B8A;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #666;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: #FF6B8A;
+            color: white;
+        }
+
+        .nav-item.active {
+            background: #FF6B8A !important;
+            color: white !important;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .nav-item:nth-child(1) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(2) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(3) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(4) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(5) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(6) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:nth-child(7) .nav-icon {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E");
+        }
+
+        .nav-item:hover .nav-icon,
+        .nav-item.active .nav-icon {
+            filter: brightness(0) invert(1) !important;
+        }
+
+        .nav-label {
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .badge-category {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            color: #FF6B8A;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: left;
+            padding-left: 10px;
+        }
+
+        .category-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            padding-left: 10px;
+        }
+
+        .footer-banner {
+            background: #f8f9fa;
+            padding: 5.5px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+            width: 100%;
+        }
+
+        .footer-text {
+            color: #666666;
+            font-size: 9.975px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .badges-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" style="background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%); padding: 30px; border-radius: 15px; margin-bottom: 30px; text-align: center;">
+            <div class="beta-logo" style="width: 120px; height: 120px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; position: relative;">
+                <img src="/haven-logo.png" alt="Haven Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                <div style="background: #FFD93D; color: #333; padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 8px rgba(255, 217, 61, 0.3); position: absolute; top: -10px; right: -10px;">BETA</div>
+            </div>
+            <h1>Your Badges & Achievements</h1>
+            <p>Celebrate your emotional intelligence journey and track your progress</p>
+            
+            <!-- Social Sharing Buttons -->
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <button onclick="shareReferral()" style="background: linear-gradient(135deg, #FF8C42 0%, #FFD93D 100%); color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 140, 66, 0.3);">
+                    📤 Share Haven
+                </button>
+                <button onclick="shareThisBadge('first-haven-chat')" style="background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 10px 20px; border-radius: 25px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 154, 139, 0.3);">
+                    Share This Badge
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-overview">
+            <h3>Your Journey Stats</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number" id="currentStreak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="badgesEarned">0</div>
+                    <div class="stat-label">Badges Earned</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="breakthroughs">0</div>
+                    <div class="stat-label">Breakthroughs</div>
+                </div>
+            </div>
+            
+            <!-- View My Collection Button -->
+            <div style="margin-top: 25px; text-align: center;">
+                <a href="earned-badges-v2.html" class="view-collection-btn">
+                    🏆 View My Collection
+                </a>
+            </div>
+        </div>
+
+        <div class="badges-section">
+                            <h3 class="section-title">Available Badges <span style="font-size:0.8em; color:#888; font-weight:400;">(47)</span></h3>
+            
+            <!-- STARTER BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">🌟 STARTER BADGES</h4>
+                <p class="category-description">Your first Haven steps</p>
+                <div class="badges-grid">
+                    <div class="badge-card" data-badge="first-haven-chat" style="border: 3px solid #FF6B8A; background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon" style="width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; margin: 0 auto;">
+                            <img src="../icons/haven-logo.png" alt="Haven Logo" style="width: 40px; height: 40px; object-fit: contain; position: absolute; z-index: 2;">
+                        </div>
+                        <div class="badge-name" style="color: #333;">First Haven Chat</div>
+                        <div class="badge-description" style="color: #555;">Started your emotional intelligence journey</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF6B8A;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/1</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/1</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareThisBadge('first-haven-chat')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">
+                                    Share This Badge
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card" data-badge="first-message" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">💬</div>
+                        <div class="badge-name" style="color: #333;">First Conversation</div>
+                        <div class="badge-description" style="color: #555;">Send your first message to Haven</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/1</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/1</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareThisBadge('first-message')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">
+                                    Share This Badge
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONSISTENCY BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">🔥 CONSISTENCY BADGES</h4>
+                <p class="category-description">Building healthy habits</p>
+                <div class="badges-grid">
+                    <div class="badge-card" data-badge="3-day-streak" style="border: 3px solid #FF8C42; background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🔥</div>
+                        <div class="badge-name" style="color: #333;">3-Day Haven Streak</div>
+                        <div class="badge-description" style="color: #555;">Daily check-ins for three days</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF8C42;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/3</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/3</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('3-day-streak')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">
+                                    Show It Off
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card" data-badge="7-day-streak" style="border: 3px solid #D2691E; background: linear-gradient(135deg, #FF6B8A 0%, #FF8A9A 100%);">
+                        <div class="badge-icon">🔥</div>
+                        <div class="badge-name" style="color: white;">7-Day Haven Streak</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Daily check-ins for a full week</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #D2691E;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/7</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/7</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('7-day-streak')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">
+                                    Show It Off
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="month-streak" style="background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                        <div class="badge-icon">📅</div>
+                        <div class="badge-name" style="color: white;">Monthly Master</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Use Haven for 30 consecutive days</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/30</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/30</span>
+                                <span style="color: white;">Rarity: Rare</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('month-streak')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">
+                                    Show It Off
+                                </button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONVERSATION MILESTONES -->
+            <div class="badge-category">
+                <h4 class="category-header">💪 CONVERSATION MILESTONES</h4>
+                <p class="category-description">Growing through dialogue</p>
+                <div class="badges-grid">
+                    <div class="badge-card" data-badge="ei-explorer" style="border: 3px solid #FF6B8A; background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🕐</div>
+                        <div class="badge-name" style="color: #333;">EI Explorer</div>
+                        <div class="badge-description" style="color: #555;">Had 5 meaningful conversations</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF6B8A;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/5</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/5</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('ei-explorer')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">
+                                    Show It Off
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="ei-regular" style="border: 3px solid #FF9A8B; background: linear-gradient(135deg, #FF6B8A 0%, #FF8A9A 100%);">
+                        <div class="badge-icon">💎</div>
+                        <div class="badge-name" style="color: white;">Haven EI Regular</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Reached 25 conversations milestone</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF9A8B;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/25</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/25</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('ei-regular')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">
+                                    Show It Off
+                                </button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="ei-champion" style="border: 3px solid #E8447A; background: linear-gradient(135deg, #E8447A 0%, #FF6B8A 100%);">
+                        <div class="badge-icon">👑</div>
+                        <div class="badge-name" style="color: white;">EI Champion</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Completed 50 conversations with growth</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #E8447A;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/50</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/50</span>
+                                <span style="color: white;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('ei-champion')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMOTIONAL GROWTH BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">🧠 EMOTIONAL GROWTH BADGES</h4>
+                <p class="category-description">Developing EI skills</p>
+                <div class="badges-grid">
+                    <div class="badge-card" data-badge="growth-seeker" style="border: 3px solid #28a745; background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🌱</div>
+                        <div class="badge-name" style="color: #333;">Growth Seeker</div>
+                        <div class="badge-description" style="color: #555;">Actively pursued personal development</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #28a745;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/1</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/1</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('growth-seeker')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="mindfulness-master" style="border: 3px solid #FF8C42; background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                        <div class="badge-icon">🧘</div>
+                        <div class="badge-name" style="color: white;">Mindfulness Master</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Practiced mindfulness and self-awareness</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF8C42;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/1</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/1</span>
+                                <span style="color: white;">Rarity: Rare</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('mindfulness-master')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIFE SKILLS BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">🛡️ LIFE SKILLS BADGES</h4>
+                <p class="category-description">Building boundaries and courage</p>
+                <div class="badges-grid">
+                    <div class="badge-card premium-badge" data-badge="comfort-zone-warrior" style="border: 3px solid #FF8C42; background: linear-gradient(135deg, #FF6B8A 0%, #FF8A9A 100%);">
+                        <div class="badge-icon">🏆</div>
+                        <div class="badge-name" style="color: white;">Comfort Zone Warrior</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Stepped outside your comfort zone with courage</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF8C42;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/1</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/1</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('comfort-zone-warrior')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="boundary-builder" style="border: 3px solid #FF9A8B; background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🛡️</div>
+                        <div class="badge-name" style="color: #333;">Boundary Builder</div>
+                        <div class="badge-description" style="color: #555;">Set healthy emotional boundaries</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF9A8B;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/1</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/1</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('boundary-builder')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="crisis-overcomer" style="border: 3px solid #FF6B8A; background: linear-gradient(135deg, #E8447A 0%, #FF6B8A 100%);">
+                        <div class="badge-icon">🆘</div>
+                        <div class="badge-name" style="color: white;">Crisis Supporter</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Successfully navigate a difficult emotional situation</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%; background: #FF6B8A;"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/1</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/1</span>
+                                <span style="color: white;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('crisis-overcomer')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADVANCED TRACKING BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">📊 ADVANCED TRACKING BADGES</h4>
+                <p class="category-description">Master data analysis and pattern recognition</p>
+                <div class="badges-grid">
+                    <div class="badge-card premium-badge" data-badge="data-detective" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">📊</div>
+                        <div class="badge-name" style="color: #333;">Data Detective</div>
+                        <div class="badge-description" style="color: #555;">Analyze your emotional patterns over 30 days</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/30 days</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/30 days</span>
+                                <span style="color: #333;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('data-detective')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="goal-getter" style="background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                        <div class="badge-icon">🎯</div>
+                        <div class="badge-name" style="color: white;">Goal Getter</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Set and achieve 10 personal growth goals</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/10 goals</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/10 goals</span>
+                                <span style="color: white;">Rarity: Legendary</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('goal-getter')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="pattern-master" style="background: linear-gradient(135deg, #E8447A 0%, #FF6B8A 100%);">
+                        <div class="badge-icon">🔍</div>
+                        <div class="badge-name" style="color: white;">Pattern Master</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Identify and break 5 negative emotional patterns</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/5 patterns</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/5 patterns</span>
+                                <span style="color: white;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('pattern-master')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WELLNESS BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">💆 WELLNESS BADGES</h4>>
+                <p class="category-description">Self-care and balance</p>
+                <div class="badges-grid">
+                    <div class="badge-card premium-badge" data-badge="self-care-champion" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">💗</div>
+                        <div class="badge-name" style="color: #333;">Self-Care Champion</div>
+                        <div class="badge-description" style="color: #555;">Discuss self-care strategies in 3 conversations</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/3</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/3</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('self-care-champion')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="gratitude-practitioner" style="background: linear-gradient(135deg, #FF6B8A 0%, #FF8A9A 100%);">
+                        <div class="badge-icon">🙏</div>
+                        <div class="badge-name" style="color: white;">Gratitude Practitioner</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Practice gratitude in 5 conversations</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/5</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/5</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('gratitude-practitioner')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAILY HABIT BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">☀️ DAILY HABIT BADGES</h4>
+                <p class="category-description">Daily wellness practices that reset at midnight</p>
+                <div class="badges-grid">
+                    <div class="badge-card premium-badge" data-badge="morning-gratitude" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">☀️</div>
+                        <div class="badge-name" style="color: #333;">Morning Gratitude</div>
+                        <div class="badge-description" style="color: #555;">Complete your daily gratitude journal</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/1 today</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/1 today</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('morning-gratitude')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="daily-zen" style="background: linear-gradient(135deg, #FF6B8A 0%, #FF8A9A 100%);">
+                        <div class="badge-icon">🧘</div>
+                        <div class="badge-name" style="color: white;">Daily Zen</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Complete all 6 daily practices</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/6 today</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/6 today</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('daily-zen')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="mood-master" style="background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                        <div class="badge-icon">🎭</div>
+                        <div class="badge-name" style="color: white;">Mood Master</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Track your mood in the journal today</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/1 today</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/1 today</span>
+                                <span style="color: white;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('mood-master')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="self-love-champion" style="background: linear-gradient(135deg, #FF9A8B 0%, #FFB3A3 100%);">
+                        <div class="badge-icon">💝</div>
+                        <div class="badge-name" style="color: white;">Self-Love Champion</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Practice self-compassion in your journal</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/1 today</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/1 today</span>
+                                <span style="color: white;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('self-love-champion')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card" data-badge="connection-keeper" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🤝</div>
+                        <div class="badge-name" style="color: #333;">Connection Keeper</div>
+                        <div class="badge-description" style="color: #555;">Have a conversation with Haven today</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/1 today</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/1 today</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('connection-keeper')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEKLY CHALLENGE BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">🔥 WEEKLY CHALLENGE BADGES</h4>
+                <p class="category-description">Weekly challenges that reset every Sunday</p>
+                <div class="badges-grid">
+                    <div class="badge-card premium-badge" data-badge="weekly-warrior" style="background: linear-gradient(135deg, #FF6B8A 0%, #FF8A9A 100%);">
+                        <div class="badge-icon">🔥</div>
+                        <div class="badge-name" style="color: white;">Weekly Warrior</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Complete 5 conversations this week</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/5 this week</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/5 this week</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('weekly-warrior')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="journal-enthusiast" style="background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                        <div class="badge-icon">📝</div>
+                        <div class="badge-name" style="color: white;">Journal Enthusiast</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Complete 3 journal entries this week</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/3 this week</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/3 this week</span>
+                                <span style="color: white;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('journal-enthusiast')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="growth-sprinter" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🌱</div>
+                        <div class="badge-name" style="color: #333;">Growth Sprinter</div>
+                        <div class="badge-description" style="color: #555;">Practice 4 different wellness activities this week</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/4 this week</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/4 this week</span>
+                                <span style="color: #333;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('growth-sprinter')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="comfort-zone-crusher" style="background: linear-gradient(135deg, #FF9A8B 0%, #FFB3A3 100%);">
+                        <div class="badge-icon">💪</div>
+                        <div class="badge-name" style="color: white;">Comfort Zone Crusher</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Step outside your comfort zone 2 times this week</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/2 this week</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/2 this week</span>
+                                <span style="color: white;">Rarity: Rare</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('comfort-zone-crusher')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- MONTHLY GOAL BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">📅 MONTHLY GOAL BADGES</h4>
+                <p class="category-description">Monthly achievements that reset on the 1st of each month</p>
+                <div class="badges-grid">
+                    <div class="badge-card premium-badge" data-badge="monthly-champion" style="background: linear-gradient(135deg, #FF6B8A 0%, #FF8A9A 100%);">
+                        <div class="badge-icon">📅</div>
+                        <div class="badge-name" style="color: white;">Monthly Champion</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Use Haven for 20 days this month</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/20 this month</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/20 this month</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('monthly-champion')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="gratitude-master" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🌟</div>
+                        <div class="badge-name" style="color: #333;">Gratitude Master</div>
+                        <div class="badge-description" style="color: #555;">Complete 15 gratitude journal entries this month</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/15 this month</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/15 this month</span>
+                                <span style="color: #333;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('gratitude-master')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="ei-scholar" style="background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                        <div class="badge-icon">🧠</div>
+                        <div class="badge-name" style="color: white;">EI Scholar</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Have 30 meaningful conversations this month</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/30 this month</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/30 this month</span>
+                                <span style="color: white;">Rarity: Rare</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('ei-scholar')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="boundary-boss" style="background: linear-gradient(135deg, #FF9A8B 0%, #FFB3A3 100%);">
+                        <div class="badge-icon">🏡</div>
+                        <div class="badge-name" style="color: white;">Boundary Boss</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Practice boundary-setting in 8 conversations this month</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/8 this month</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/8 this month</span>
+                                <span style="color: white;">Rarity: Rare</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('boundary-boss')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="wellness-warrior" style="background: linear-gradient(135deg, #E8447A 0%, #FF6B8A 100%);">
+                        <div class="badge-icon">💎</div>
+                        <div class="badge-name" style="color: white;">Wellness Warrior</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Complete 25 wellness activities this month</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/25 this month</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/25 this month</span>
+                                <span style="color: white;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('wellness-warrior')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEASONAL CHALLENGE BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">🌸 SEASONAL CHALLENGE BADGES</h4>
+                <p class="category-description">Seasonal achievements that reset every 3 months</p>
+                <div class="badges-grid">
+                    <div class="badge-card premium-badge" data-badge="spring-awakening" style="background: linear-gradient(135deg, #90EE90 0%, #98FB98 100%);">
+                        <div class="badge-icon">🌸</div>
+                        <div class="badge-name" style="color: #333;">Spring Awakening</div>
+                        <div class="badge-description" style="color: #555;">Complete 15 self-care activities in spring</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/15 activities</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/15 activities</span>
+                                <span style="color: #333;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('spring-awakening')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="summer-shine" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);">
+                        <div class="badge-icon">☀️</div>
+                        <div class="badge-name" style="color: #333;">Summer Shine</div>
+                        <div class="badge-description" style="color: #555;">Achieve 20 positive mood entries in summer</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/20 entries</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/20 entries</span>
+                                <span style="color: #333;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('summer-shine')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="autumn-wisdom" style="background: linear-gradient(135deg, #D2691E 0%, #CD853F 100%);">
+                        <div class="badge-icon">🍂</div>
+                        <div class="badge-name" style="color: white;">Autumn Wisdom</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Complete 10 reflection exercises in autumn</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/10 exercises</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/10 exercises</span>
+                                <span style="color: white;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('autumn-wisdom')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                    <div class="badge-card premium-badge" data-badge="winter-strength" style="background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);">
+                        <div class="badge-icon">❄️</div>
+                        <div class="badge-name" style="color: #333;">Winter Strength</div>
+                        <div class="badge-description" style="color: #555;">Maintain a 21-day wellness streak in winter</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/21 days</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/21 days</span>
+                                <span style="color: #333;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('winter-strength')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                        <div class="premium-lock">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STREAK MULTIPLIER BADGES -->
+            <div class="badge-category">
+                <h4 class="category-header">🔥 STREAK MULTIPLIER BADGES</h4>
+                <p class="category-description">Permanent achievements for maintaining consistent streaks</p>
+                <div class="badges-grid">
+                    <div class="badge-card" data-badge="streak-spark" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                        <div class="badge-icon">🔥</div>
+                        <div class="badge-name" style="color: #333;">Spark</div>
+                        <div class="badge-description" style="color: #555;">Maintain a 3-day streak</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: #333;">Progress: 0/3 days</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: #333;">Progress: 0/3 days</span>
+                                <span style="color: #333;">Rarity: Common</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('streak-spark')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card" data-badge="streak-flame" style="background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                        <div class="badge-icon">🔥🔥</div>
+                        <div class="badge-name" style="color: white;">Flame</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Maintain a 7-day streak</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/7 days</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/7 days</span>
+                                <span style="color: white;">Rarity: Uncommon</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('streak-flame')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card" data-badge="streak-inferno" style="background: linear-gradient(135deg, #E8447A 0%, #FF6B8A 100%);">
+                        <div class="badge-icon">🔥🔥🔥</div>
+                        <div class="badge-name" style="color: white;">Inferno</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Maintain a 30-day streak</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/30 days</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/30 days</span>
+                                <span style="color: white;">Rarity: Epic</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('streak-inferno')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="badge-card" data-badge="streak-phoenix" style="background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);">
+                        <div class="badge-icon">🔥🔥🔥🔥</div>
+                        <div class="badge-name" style="color: white;">Phoenix</div>
+                        <div class="badge-description" style="color: #f0f0f0;">Maintain a 100-day streak</div>
+                        <div class="badge-progress">
+                            <div class="badge-progress-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="badge-status locked" style="color: white;">Progress: 0/100 days</div>
+                        <div class="badge-details">
+                            <div class="badge-stats">
+                                <span style="color: white;">Progress: 0/100 days</span>
+                                <span style="color: white;">Rarity: Legendary</span>
+                            </div>
+                            <div class="badge-actions">
+                                <button class="share-badge-btn" onclick="shareBadge('streak-phoenix')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOCIAL SHARING BADGES -->
+        <div class="badge-category">
+            <h4 class="category-header">📱 SOCIAL SHARING BADGES</h4>
+            <p class="category-description">Spread positivity and build community</p>
+            <div class="badges-grid">
+                <div class="badge-card" data-badge="good-vibes-spreader" style="background: linear-gradient(135deg, #FFD93D 0%, #FFE566 100%);">
+                    <div class="badge-icon">📱</div>
+                    <div class="badge-name" style="color: #333;">Good Vibes Spreader</div>
+                    <div class="badge-description" style="color: #555;">Share your journal entries 5 times</div>
+                    <div class="badge-progress">
+                        <div class="badge-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="badge-status locked" style="color: #333;">Progress: 0/5</div>
+                    <div class="badge-details">
+                        <div class="badge-stats">
+                            <span style="color: #333;">Progress: 0/5</span>
+                            <span style="color: #333;">Rarity: Common</span>
+                        </div>
+                        <div class="badge-actions">
+                            <button class="share-badge-btn" onclick="shareBadge('good-vibes-spreader')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="badge-card" data-badge="inspiration-ambassador" style="background: linear-gradient(135deg, #FF8C42 0%, #FFA366 100%);">
+                    <div class="badge-icon">🌟</div>
+                    <div class="badge-name" style="color: white;">Inspiration Ambassador</div>
+                    <div class="badge-description" style="color: #f0f0f0;">Refer 3 friends to Haven</div>
+                    <div class="badge-progress">
+                        <div class="badge-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="badge-status locked" style="color: white;">Progress: 0/3</div>
+                    <div class="badge-details">
+                        <div class="badge-stats">
+                            <span style="color: white;">Progress: 0/3</span>
+                            <span style="color: white;">Rarity: Uncommon</span>
+                        </div>
+                        <div class="badge-actions">
+                            <button class="share-badge-btn" onclick="shareBadge('inspiration-ambassador')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="badge-card" data-badge="support-circle-builder" style="background: linear-gradient(135deg, #E8447A 0%, #FF6B8A 100%);">
+                    <div class="badge-icon">💝</div>
+                    <div class="badge-name" style="color: white;">Support Circle Builder</div>
+                    <div class="badge-description" style="color: #f0f0f0;">Share on social media 10 times</div>
+                    <div class="badge-progress">
+                        <div class="badge-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="badge-status locked" style="color: white;">Progress: 0/10</div>
+                    <div class="badge-details">
+                        <div class="badge-stats">
+                            <span style="color: white;">Progress: 0/10</span>
+                            <span style="color: white;">Rarity: Epic</span>
+                        </div>
+                        <div class="badge-actions">
+                            <button class="share-badge-btn" onclick="shareBadge('support-circle-builder')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="badge-card" data-badge="wellness-influencer" style="background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%);">
+                    <div class="badge-icon">🎭</div>
+                    <div class="badge-name" style="color: white;">Wellness Influencer</div>
+                    <div class="badge-description" style="color: #f0f0f0;">Share wellness content 15 times</div>
+                    <div class="badge-progress">
+                        <div class="badge-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="badge-status locked" style="color: white;">Progress: 0/15</div>
+                    <div class="badge-details">
+                        <div class="badge-stats">
+                            <span style="color: white;">Progress: 0/15</span>
+                            <span style="color: white;">Rarity: Epic</span>
+                        </div>
+                        <div class="badge-actions">
+                            <button class="share-badge-btn" onclick="shareBadge('wellness-influencer')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="badge-card" data-badge="community-champion" style="background: linear-gradient(135deg, #D2691E 0%, #FF8C42 100%);">
+                    <div class="badge-icon">🌈</div>
+                    <div class="badge-name" style="color: white;">Community Champion</div>
+                    <div class="badge-description" style="color: #f0f0f0;">Build a community of 20+ referrals</div>
+                    <div class="badge-progress">
+                        <div class="badge-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="badge-status locked" style="color: white;">Progress: 0/20</div>
+                    <div class="badge-details">
+                        <div class="badge-stats">
+                            <span style="color: white;">Progress: 0/20</span>
+                            <span style="color: white;">Rarity: Legendary</span>
+                        </div>
+                        <div class="badge-actions">
+                            <button class="share-badge-btn" onclick="shareBadge('community-champion')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="badge-card" data-badge="mental-health-advocate" style="background: linear-gradient(135deg, #FF6B8A 0%, #FF9A8B 100%);">
+                    <div class="badge-icon">📢</div>
+                    <div class="badge-name" style="color: white;">Mental Health Advocate</div>
+                    <div class="badge-description" style="color: #f0f0f0;">Share mental health awareness 25 times</div>
+                    <div class="badge-progress">
+                        <div class="badge-progress-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="badge-status locked" style="color: white;">Progress: 0/25</div>
+                    <div class="badge-details">
+                        <div class="badge-stats">
+                            <span style="color: white;">Progress: 0/25</span>
+                            <span style="color: white;">Rarity: Legendary</span>
+                        </div>
+                        <div class="badge-actions">
+                            <button class="share-badge-btn" onclick="shareBadge('mental-health-advocate')" style="display: block; background: linear-gradient(135deg, #FF9A8B 0%, #FFD93D 100%); color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(255, 154, 139, 0.3); margin-top: 8px;">Show It Off</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Bottom Spacer to prevent cutoff -->
+    <div style="height: 100px;"></div>
+
+            <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-items">
+            <a href="home.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Home</div>
+            </a>
+            <a href="index.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Chat</div>
+            </a>
+            <a href="journal.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Journal</div>
+            </a>
+            <a href="badges.html" class="nav-item active">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Badges</div>
+            </a>
+            <a href="plans.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Plans</div>
+            </a>
+            <a href="account.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Account</div>
+            </a>
+            <a href="support.html" class="nav-item">
+                <div class="nav-icon"></div>
+                <div class="nav-label">Support</div>
+            </a>
+                    </div>
+            <!-- Footer Banner -->
+            <div class="footer-banner">
+                <div class="footer-text">
+                    <div>Haven is an educational platform. Not medical advice.</div>
+                    <div>Crisis support: 988</div>
+                </div>
+            </div>
+        </nav>
+
+    <script>
+        // Badge tracking system
+        class BadgeTracker {
+            constructor() {
+                this.badges = {
+                    // STARTER BADGES (FREE)
+                    'first-haven-chat': { earned: false, progress: 0, max: 1, type: 'permanent', premium: false, resetDate: null },
+                    'first-message': { earned: false, progress: 0, max: 1, type: 'permanent', premium: false, resetDate: null },
+                    
+                    // CONSISTENCY BADGES
+                    '3-day-streak': { earned: false, progress: 0, max: 3, type: 'daily', premium: false, resetDate: this.getNextMidnight() },
+                    '7-day-streak': { earned: false, progress: 0, max: 7, type: 'weekly', premium: false, resetDate: this.getNextSunday() },
+                    'month-streak': { earned: false, progress: 0, max: 30, type: 'monthly', premium: true, resetDate: this.getNextMonth() },
+                    
+                    // CONVERSATION MILESTONES
+                    'ei-explorer': { earned: false, progress: 0, max: 5, type: 'permanent', premium: false, resetDate: null },
+                    'ei-regular': { earned: false, progress: 0, max: 25, type: 'permanent', premium: true, resetDate: null },
+                    'ei-champion': { earned: false, progress: 0, max: 50, type: 'permanent', premium: true, resetDate: null },
+                    
+                    // EMOTIONAL GROWTH BADGES
+                    'growth-seeker': { earned: false, progress: 0, max: 1, type: 'monthly', premium: false, resetDate: this.getNextMonth() },
+                    'mindfulness-master': { earned: false, progress: 0, max: 1, type: 'daily', premium: true, resetDate: this.getNextMidnight() },
+                    
+                    // LIFE SKILLS BADGES
+                    'comfort-zone-warrior': { earned: false, progress: 0, max: 1, type: 'weekly', premium: true, resetDate: this.getNextSunday() },
+                    'boundary-builder': { earned: false, progress: 0, max: 1, type: 'weekly', premium: true, resetDate: this.getNextSunday() },
+                    'crisis-overcomer': { earned: false, progress: 0, max: 1, type: 'monthly', premium: true, resetDate: this.getNextMonth() },
+                    
+                    // WELLNESS BADGES
+                    'self-care-champion': { earned: false, progress: 0, max: 3, type: 'permanent', premium: true, resetDate: null },
+                    'gratitude-practitioner': { earned: false, progress: 0, max: 5, type: 'daily', premium: true, resetDate: this.getNextMidnight() },
+                    
+                    // DAILY HABIT BADGES (reset at midnight)
+                    'morning-gratitude': { earned: false, progress: 0, max: 1, type: 'daily', premium: true, resetDate: this.getNextMidnight() },
+                    'daily-zen': { earned: false, progress: 0, max: 6, type: 'daily', premium: true, resetDate: this.getNextMidnight() },
+                    'mood-master': { earned: false, progress: 0, max: 1, type: 'daily', premium: true, resetDate: this.getNextMidnight() },
+                    'self-love-champion': { earned: false, progress: 0, max: 1, type: 'daily', premium: true, resetDate: this.getNextMidnight() },
+                    'connection-keeper': { earned: false, progress: 0, max: 1, type: 'daily', premium: false, resetDate: this.getNextMidnight() },
+                    'work-break-warrior': { earned: false, progress: 0, max: 1, type: 'daily', premium: false, resetDate: this.getNextMidnight() },
+                    
+                    // WEEKLY CHALLENGE BADGES (reset every Sunday)
+                    'weekly-warrior': { earned: false, progress: 0, max: 5, type: 'weekly', premium: true, resetDate: this.getNextSunday() },
+                    'journal-enthusiast': { earned: false, progress: 0, max: 3, type: 'weekly', premium: true, resetDate: this.getNextSunday() },
+                    'growth-sprinter': { earned: false, progress: 0, max: 4, type: 'weekly', premium: true, resetDate: this.getNextSunday() },
+                    'comfort-zone-crusher': { earned: false, progress: 0, max: 2, type: 'weekly', premium: true, resetDate: this.getNextSunday() },
+                    
+                    // MONTHLY GOAL BADGES (reset on 1st of each month)
+                    'monthly-champion': { earned: false, progress: 0, max: 20, type: 'monthly', premium: true, resetDate: this.getNextMonth() },
+                    'gratitude-master': { earned: false, progress: 0, max: 15, type: 'monthly', premium: true, resetDate: this.getNextMonth() },
+                    'ei-scholar': { earned: false, progress: 0, max: 30, type: 'monthly', premium: true, resetDate: this.getNextMonth() },
+                    'boundary-boss': { earned: false, progress: 0, max: 8, type: 'monthly', premium: true, resetDate: this.getNextMonth() },
+                    'wellness-warrior': { earned: false, progress: 0, max: 25, type: 'monthly', premium: true, resetDate: this.getNextMonth() },
+                    
+                    // STREAK MULTIPLIER BADGES (permanent)
+                    'streak-spark': { earned: false, progress: 0, max: 3, type: 'permanent', premium: false, resetDate: null },
+                    'streak-flame': { earned: false, progress: 0, max: 7, type: 'permanent', premium: false, resetDate: null },
+                    'streak-inferno': { earned: false, progress: 0, max: 30, type: 'permanent', premium: false, resetDate: null },
+                    'streak-phoenix': { earned: false, progress: 0, max: 100, type: 'permanent', premium: false, resetDate: null },
+                    
+                    // SOCIAL SHARING BADGES
+                    'good-vibes-spreader': { earned: false, progress: 0, max: 5, type: 'daily', premium: false, resetDate: this.getNextMidnight() },
+                    'inspiration-ambassador': { earned: false, progress: 0, max: 3, type: 'daily', premium: false, resetDate: this.getNextMidnight() },
+                    'support-circle-builder': { earned: false, progress: 0, max: 10, type: 'daily', premium: false, resetDate: null },
+                    'wellness-influencer': { earned: false, progress: 0, max: 15, type: 'permanent', premium: false, resetDate: null },
+                    'community-champion': { earned: false, progress: 0, max: 20, type: 'monthly', premium: false, resetDate: this.getNextMonth() },
+                    'mental-health-advocate': { earned: false, progress: 0, max: 25, type: 'permanent', premium: false, resetDate: null },
+                    
+                    // ADVANCED TRACKING BADGES (permanent)
+                    'data-detective': { earned: false, progress: 0, max: 30, type: 'permanent', premium: false, resetDate: null },
+                    'goal-getter': { earned: false, progress: 0, max: 10, type: 'permanent', premium: false, resetDate: null },
+                    'pattern-master': { earned: false, progress: 0, max: 5, type: 'permanent', premium: false, resetDate: null },
+                    
+                    // SEASONAL CHALLENGE BADGES
+                    'spring-awakening': { earned: false, progress: 0, max: 15, type: 'seasonal', premium: true, resetDate: this.getSeasonalReset('spring') },
+                    'summer-shine': { earned: false, progress: 0, max: 20, type: 'seasonal', premium: true, resetDate: this.getSeasonalReset('summer') },
+                    'autumn-wisdom': { earned: false, progress: 0, max: 10, type: 'seasonal', premium: true, resetDate: this.getSeasonalReset('autumn') },
+                    'winter-strength': { earned: false, progress: 0, max: 21, type: 'seasonal', premium: true, resetDate: this.getSeasonalReset('winter') }
+                };
+                
+                this.stats = {
+                    totalMessages: 0,
+                    currentStreak: 0,
+                    badgesEarned: 0,
+                    breakthroughs: 0,
+                    lastActivityDate: null,
+                    activityDates: []
+                };
+                
+                this.loadData();
+                this.updateDisplay();
+                this.checkTimedResets();
+            }
+
+            // Timing helper methods
+            getNextMidnight() {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                return tomorrow.getTime();
+            }
+
+            getNextSunday() {
+                const today = new Date();
+                const daysUntilSunday = 7 - today.getDay();
+                const nextSunday = new Date();
+                nextSunday.setDate(today.getDate() + daysUntilSunday);
+                nextSunday.setHours(0, 0, 0, 0);
+                return nextSunday.getTime();
+            }
+
+            getNextMonth() {
+                const today = new Date();
+                const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                return nextMonth.getTime();
+            }
+
+            getSeasonalReset(season) {
+                const today = new Date();
+                const currentYear = today.getFullYear();
+                
+                switch(season) {
+                    case 'spring': return new Date(currentYear, 1, 1).getTime(); // Feb 1
+                    case 'summer': return new Date(currentYear, 4, 1).getTime(); // May 1
+                    case 'autumn': return new Date(currentYear, 7, 1).getTime(); // Aug 1
+                    case 'winter': return new Date(currentYear, 10, 1).getTime(); // Nov 1
+                    default: return this.getNextMonth();
+                }
+            }
+
+            getWeekKey() {
+                const today = new Date();
+                const startOfWeek = new Date(today);
+                startOfWeek.setDate(today.getDate() - today.getDay());
+                startOfWeek.setHours(0, 0, 0, 0);
+                return startOfWeek.toISOString().split('T')[0];
+            }
+
+            checkTimedResets() {
+                const now = Date.now();
+                
+                Object.keys(this.badges).forEach(badgeId => {
+                    const badge = this.badges[badgeId];
+                    if (badge.resetDate && badge.resetDate <= now) {
+                        // Reset the badge
+                        badge.earned = false;
+                        badge.progress = 0;
+                        
+                        // Set new reset date based on type
+                        if (badge.type === 'daily') {
+                            badge.resetDate = this.getNextMidnight();
+                        } else if (badge.type === 'weekly') {
+                            badge.resetDate = this.getNextSunday();
+                        } else if (badge.type === 'monthly') {
+                            badge.resetDate = this.getNextMonth();
+                        } else if (badge.type === 'seasonal') {
+                            // For seasonal badges, set next year's reset date
+                            const currentYear = new Date().getFullYear();
+                            if (badgeId === 'spring-awakening') {
+                                badge.resetDate = new Date(currentYear + 1, 1, 1).getTime(); // Next Feb 1
+                            } else if (badgeId === 'summer-shine') {
+                                badge.resetDate = new Date(currentYear + 1, 4, 1).getTime(); // Next May 1
+                            } else if (badgeId === 'autumn-wisdom') {
+                                badge.resetDate = new Date(currentYear + 1, 7, 1).getTime(); // Next Aug 1
+                            } else if (badgeId === 'winter-strength') {
+                                badge.resetDate = new Date(currentYear + 1, 10, 1).getTime(); // Next Nov 1
+                            }
+                        }
+                    }
+                });
+                
+                this.saveData();
+            }
+
+            // Access control methods
+            isPremiumUser() {
+                // Check if user has premium plan
+                const userPlan = localStorage.getItem('haven_user_plan') || 'starter';
+                return userPlan === 'regular' || userPlan === 'premium';
+            }
+
+            canEarnBadge(badgeId) {
+                const badge = this.badges[badgeId];
+                if (!badge) return false;
+                
+                // If badge is premium and user is not premium, show upgrade modal
+                if (badge.premium && !this.isPremiumUser()) {
+                    this.showUpgradeModal(badgeId);
+                    return false;
+                }
+                
+                return true;
+            }
+
+            showUpgradeModal(badgeId) {
+                const badgeNames = {
+                    'month-streak': 'Monthly Master',
+                    'ei-regular': 'Haven EI Regular',
+                    'ei-champion': 'EI Champion',
+                    'mindfulness-master': 'Mindfulness Master',
+                    'comfort-zone-warrior': 'Comfort Zone Warrior',
+                    'boundary-builder': 'Boundary Builder',
+                    'crisis-overcomer': 'Crisis Supporter',
+                    'self-care-champion': 'Self-Care Champion',
+                    'gratitude-practitioner': 'Gratitude Practitioner',
+                    'morning-gratitude': 'Morning Gratitude',
+                    'daily-zen': 'Daily Zen',
+                    'mood-master': 'Mood Master',
+                    'self-love-champion': 'Self-Love Champion',
+                    'connection-keeper': 'Connection Keeper',
+                    'work-break-warrior': 'Work Break Warrior',
+                    'weekly-warrior': 'Weekly Warrior',
+                    'journal-enthusiast': 'Journal Enthusiast',
+                    'growth-sprinter': 'Growth Sprinter',
+                    'comfort-zone-crusher': 'Comfort Zone Crusher',
+                    'monthly-champion': 'Monthly Champion',
+                    'gratitude-master': 'Gratitude Master',
+                    'ei-scholar': 'EI Scholar',
+                    'boundary-boss': 'Boundary Boss',
+                    'wellness-warrior': 'Wellness Warrior',
+                    
+                    // STREAK MULTIPLIER BADGES
+                    'streak-spark': 'Spark',
+                    'streak-flame': 'Flame',
+                    'streak-inferno': 'Inferno',
+                    'streak-phoenix': 'Phoenix'
+                };
+                
+                const badgeName = badgeNames[badgeId] || 'Premium Badge';
+                
+                // Create upgrade modal
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.8);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 10000;
+                `;
+                
+                modal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 20px; max-width: 400px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                        <div style="font-size: 3rem; margin-bottom: 20px;">🔒</div>
+                        <h2 style="color: #FF6B8A; margin-bottom: 15px;">Premium Badge Unlocked!</h2>
+                        <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                            The "${badgeName}" badge is available for Regular plan users. 
+                            Upgrade to unlock this and other premium badges!
+                        </p>
+                        <div style="display: flex; gap: 10px; justify-content: center;">
+                            <button onclick="this.parentElement.parentElement.parentElement.remove();" 
+                                    style="background: #f8f9fa; color: #666; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer;">
+                                Maybe Later
+                            </button>
+                            <button onclick="window.location.href='plans.html';" 
+                                    style="background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: bold;">
+                                Upgrade Now
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (modal.parentElement) {
+                        modal.remove();
+                    }
+                }, 5000);
+            }
+
+            loadData() {
+                const savedBadges = localStorage.getItem('havenBadges');
+                const savedStats = localStorage.getItem('havenStats');
+                
+                if (savedBadges) {
+                    this.badges = { ...this.badges, ...JSON.parse(savedBadges) };
+                }
+                
+                if (savedStats) {
+                    this.stats = { ...this.stats, ...JSON.parse(savedStats) };
+                }
+            }
+
+            saveData() {
+                localStorage.setItem('havenBadges', JSON.stringify(this.badges));
+                localStorage.setItem('havenStats', JSON.stringify(this.stats));
+            }
+
+            updateProgress(badgeId, progress) {
+                if (this.badges[badgeId]) {
+                    // Check if user can earn this badge
+                    if (!this.canEarnBadge(badgeId)) {
+                        return;
+                    }
+                    
+                    this.badges[badgeId].progress = Math.min(progress, this.badges[badgeId].max);
+                    
+                    if (this.badges[badgeId].progress >= this.badges[badgeId].max && !this.badges[badgeId].earned) {
+                        this.earnBadge(badgeId);
+                    }
+                    
+                    this.saveData();
+                    this.updateDisplay();
+                }
+            }
+
+            earnBadge(badgeId) {
+                this.badges[badgeId].earned = true;
+                this.stats.badgesEarned++;
+                
+                // Show notification
+                this.showBadgeNotification(badgeId);
+                
+                this.saveData();
+                this.updateDisplay();
+            }
+
+            showBadgeNotification(badgeId) {
+                                const badgeNames = {
+                    // STARTER BADGES
+                    'first-haven-chat': 'First Haven Chat',
+                    'first-message': 'First Conversation',
+
+                    // CONSISTENCY BADGES
+                    '3-day-streak': '3-Day Haven Streak',
+                    '7-day-streak': '7-Day Haven Streak',
+                    'month-streak': 'Monthly Master',
+
+                    // CONVERSATION MILESTONES
+                    'ei-explorer': 'EI Explorer',
+                    'ei-regular': 'Haven EI Regular',
+                    'ei-champion': 'EI Champion',
+
+                    // EMOTIONAL GROWTH BADGES
+                    'growth-seeker': 'Growth Seeker',
+                    'mindfulness-master': 'Mindfulness Master',
+
+                    // LIFE SKILLS BADGES
+                    'comfort-zone-warrior': 'Comfort Zone Warrior',
+                    'boundary-builder': 'Boundary Builder',
+                    'crisis-overcomer': 'Crisis Supporter',
+
+                    // WELLNESS BADGES
+                    'self-care-champion': 'Self-Care Champion',
+                    'gratitude-practitioner': 'Gratitude Practitioner',
+
+                    // DAILY HABIT BADGES
+                    'morning-gratitude': 'Morning Gratitude',
+                    'daily-zen': 'Daily Zen',
+                    'mood-master': 'Mood Master',
+                    'self-love-champion': 'Self-Love Champion',
+                    'connection-keeper': 'Connection Keeper',
+                    'work-break-warrior': 'Work Break Warrior',
+
+                    // WEEKLY CHALLENGE BADGES
+                    'weekly-warrior': 'Weekly Warrior',
+                    'journal-enthusiast': 'Journal Enthusiast',
+                    'growth-sprinter': 'Growth Sprinter',
+                    'comfort-zone-crusher': 'Comfort Zone Crusher',
+
+                    // MONTHLY GOAL BADGES
+                    'monthly-champion': 'Monthly Champion',
+                    'gratitude-master': 'Gratitude Master',
+                    'ei-scholar': 'EI Scholar',
+                    'boundary-boss': 'Boundary Boss',
+                    'wellness-warrior': 'Wellness Warrior',
+
+                    // STREAK MULTIPLIER BADGES
+                    'streak-spark': 'Spark',
+                    'streak-flame': 'Flame',
+                    'streak-inferno': 'Inferno',
+                    'streak-phoenix': 'Phoenix',
+
+                    // SOCIAL SHARING BADGES
+                    'good-vibes-spreader': 'Good Vibes Spreader',
+                    'inspiration-ambassador': 'Inspiration Ambassador',
+                    'support-circle-builder': 'Support Circle Builder',
+                    'wellness-influencer': 'Wellness Influencer',
+                    'community-champion': 'Community Champion',
+                    'mental-health-advocate': 'Mental Health Advocate',
+
+                    // ADVANCED TRACKING BADGES
+                    'data-detective': 'Data Detective',
+                    'goal-getter': 'Goal Getter',
+                    'pattern-master': 'Pattern Master',
+
+                    // SEASONAL CHALLENGE BADGES
+                    'spring-awakening': 'Spring Awakening',
+                    'summer-shine': 'Summer Shine',
+                    'autumn-wisdom': 'Autumn Wisdom',
+                    'winter-strength': 'Winter Strength'
+                };
+                
+                const badgeName = badgeNames[badgeId] || 'New Badge';
+                
+                // Create notification
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+                    color: white;
+                    padding: 20px;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    animation: slideIn 0.5s ease-out;
+                `;
+                
+                notification.innerHTML = `
+                    <div style="font-size: 2em; margin-bottom: 10px;"></div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">Badge Earned!</div>
+                    <div>${badgeName}</div>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+
+            updateDisplay() {
+                // Update stats
+                document.getElementById('currentStreak').textContent = this.stats.currentStreak;
+                document.getElementById('badgesEarned').textContent = this.stats.badgesEarned;
+                document.getElementById('breakthroughs').textContent = this.stats.breakthroughs;
+
+                // Update badge cards
+                Object.keys(this.badges).forEach(badgeId => {
+                    const badge = this.badges[badgeId];
+                    const card = document.querySelector(`[data-badge="${badgeId}"]`);
+                    
+                    if (card) {
+                        const progressFill = card.querySelector('.badge-progress-fill');
+                        const status = card.querySelector('.badge-status');
+                        
+                        const progressPercent = (badge.progress / badge.max) * 100;
+                        progressFill.style.width = progressPercent + '%';
+                        
+                        if (badge.earned) {
+                            card.classList.add('earned');
+                            card.classList.remove('locked');
+                            status.textContent = 'Earned!';
+                            status.className = 'badge-status earned';
+                            
+                            // Show share button for earned badges
+                            const shareBtn = card.querySelector('.share-badge-btn');
+                            if (shareBtn) {
+                                shareBtn.style.display = 'inline-block';
+                            }
+                        } else if (badge.progress > 0) {
+                            card.classList.remove('locked');
+                            status.textContent = `${badge.progress}/${badge.max}`;
+                            status.className = 'badge-status progress';
+                        } else {
+                            card.classList.add('locked');
+                            status.textContent = 'Locked';
+                            status.className = 'badge-status locked';
+                        }
+                    }
+                });
+
+                // Update streak calendar
+                this.updateStreakCalendar();
+            }
+
+            updateStreakCalendar() {
+                const calendar = document.getElementById('streakCalendar');
+                calendar.innerHTML = '';
+                
+                const today = new Date();
+                const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+                
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    dayElement.textContent = day;
+                    
+                    const date = new Date(today.getFullYear(), today.getMonth(), day);
+                    const dateString = date.toDateString();
+                    
+                    if (this.stats.activityDates.includes(dateString)) {
+                        dayElement.classList.add('active');
+                    } else {
+                        dayElement.classList.add('inactive');
+                    }
+                    
+                    if (day === today.getDate()) {
+                        dayElement.classList.add('today');
+                    }
+                    
+                    calendar.appendChild(dayElement);
+                }
+            }
+
+            // Public methods for external use
+            recordMessage() {
+                this.stats.totalMessages++;
+                this.updateProgress('first-message', 1);
+                this.updateProgress('connection-keeper', 1);
+                
+                // Track weekly warrior badge (5 conversations per week)
+                const weeklyMessages = JSON.parse(localStorage.getItem('haven_weekly_messages') || '{}');
+                const currentWeek = this.getWeekKey();
+                weeklyMessages[currentWeek] = (weeklyMessages[currentWeek] || 0) + 1;
+                localStorage.setItem('haven_weekly_messages', JSON.stringify(weeklyMessages));
+                
+                if (weeklyMessages[currentWeek] <= 5) {
+                    this.updateProgress('weekly-warrior', weeklyMessages[currentWeek]);
+                }
+                
+                // Track monthly EI Scholar badge (30 conversations per month)
+                const currentMonth = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+                const monthlyActivities = JSON.parse(localStorage.getItem('haven_monthly_activities') || '{}');
+                
+                if (!monthlyActivities[currentMonth]) {
+                    monthlyActivities[currentMonth] = {
+                        daily_activity: 0,
+                        gratitude_journal: 0,
+                        wellness_activity: 0,
+                        conversations: 0,
+                        boundary_practice: 0
+                    };
+                }
+                
+                monthlyActivities[currentMonth].conversations++;
+                localStorage.setItem('haven_monthly_activities', JSON.stringify(monthlyActivities));
+                
+                if (monthlyActivities[currentMonth].conversations <= 30) {
+                    this.updateProgress('ei-scholar', monthlyActivities[currentMonth].conversations);
+                }
+                
+                this.recordActivity();
+                this.saveData();
+            }
+
+            recordPayment() {
+                // This function is no longer needed as 'first-payment' badge is removed
+                // this.updateProgress('first-payment', 1);
+                this.saveData();
+            }
+
+            recordBreakthrough() {
+                this.stats.breakthroughs++;
+                this.updateProgress('breakthrough', 1);
+                this.saveData();
+            }
+
+            recordSelfCompassion() {
+                this.updateProgress('self-compassion-champion', 1);
+                this.saveData();
+            }
+
+            recordActivity() {
+                const today = new Date().toDateString();
+                
+                if (!this.stats.activityDates.includes(today)) {
+                    this.stats.activityDates.push(today);
+                }
+                
+                this.stats.lastActivityDate = today;
+                this.calculateStreak();
+                this.updateStreakProgress();
+                
+                // Track monthly champion badge (20 days this month)
+                const currentMonth = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+                const monthlyActivities = JSON.parse(localStorage.getItem('haven_monthly_activities') || '{}');
+                
+                if (!monthlyActivities[currentMonth]) {
+                    monthlyActivities[currentMonth] = {
+                        daily_activity: 0,
+                        gratitude_journal: 0,
+                        wellness_activity: 0,
+                        conversations: 0,
+                        boundary_practice: 0
+                    };
+                }
+                
+                // Only increment if this is a new day
+                const todayKey = new Date().toDateString();
+                const monthlyActivityDates = JSON.parse(localStorage.getItem('haven_monthly_activity_dates') || '{}');
+                
+                if (!monthlyActivityDates[currentMonth]) {
+                    monthlyActivityDates[currentMonth] = [];
+                }
+                
+                if (!monthlyActivityDates[currentMonth].includes(todayKey)) {
+                    monthlyActivityDates[currentMonth].push(todayKey);
+                    monthlyActivities[currentMonth].daily_activity = monthlyActivityDates[currentMonth].length;
+                    localStorage.setItem('haven_monthly_activity_dates', JSON.stringify(monthlyActivityDates));
+                    localStorage.setItem('haven_monthly_activities', JSON.stringify(monthlyActivities));
+                    
+                    if (monthlyActivities[currentMonth].daily_activity <= 20) {
+                        this.updateProgress('monthly-champion', monthlyActivities[currentMonth].daily_activity);
+                    }
+                }
+            }
+
+            calculateStreak() {
+                const today = new Date();
+                let streak = 0;
+                let currentDate = new Date(today);
+                
+                while (true) {
+                    const dateString = currentDate.toDateString();
+                    if (this.stats.activityDates.includes(dateString)) {
+                        streak++;
+                        currentDate.setDate(currentDate.getDate() - 1);
+                    } else {
+                        break;
+                    }
+                }
+                
+                this.stats.currentStreak = streak;
+            }
+
+            updateStreakProgress() {
+                this.updateProgress('month-streak', Math.min(this.stats.currentStreak, 30));
+                this.updateProgress('3-day-streak', Math.min(this.stats.currentStreak, 3));
+                this.updateProgress('7-day-streak', Math.min(this.stats.currentStreak, 7));
+                
+                // Update streak multiplier badges
+                this.updateProgress('streak-spark', Math.min(this.stats.currentStreak, 3));
+                this.updateProgress('streak-flame', Math.min(this.stats.currentStreak, 7));
+                this.updateProgress('streak-inferno', Math.min(this.stats.currentStreak, 30));
+                this.updateProgress('streak-phoenix', Math.min(this.stats.currentStreak, 100));
+            }
+        }
+
+        // Manual Badge Tracking Functions
+        
+        // 1. Create a function called updateBadgeProgress(badgeId, increment) that:
+        // - Updates badge progress in localStorage or your existing badge storage
+        // - Checks if badge target is reached
+        // - Calls earnBadge() if complete
+        function updateBadgeProgress(badgeId, increment) {
+            if (!window.badgeTracker) return;
+            
+            // Check if user can earn this badge
+            if (!window.badgeTracker.canEarnBadge(badgeId)) {
+                return;
+            }
+            
+            // Get current progress and add increment
+            const badge = window.badgeTracker.badges[badgeId];
+            if (!badge) return;
+            
+            const newProgress = Math.min(badge.progress + increment, badge.max);
+            
+            // Update progress in localStorage for persistence
+            const badgeProgress = JSON.parse(localStorage.getItem('haven_badge_progress') || '{}');
+            badgeProgress[badgeId] = newProgress;
+            localStorage.setItem('haven_badge_progress', JSON.stringify(badgeProgress));
+            
+            // Update the badge tracker
+            window.badgeTracker.updateProgress(badgeId, newProgress);
+            
+            // Check if badge target is reached and earn if complete
+            if (newProgress >= badge.max && !badge.earned) {
+                window.badgeTracker.earnBadge(badgeId);
+            }
+        }
+        
+        // 2. Create a function called earnBadge(badgeId) that:
+        // - Marks badge as earned
+        // - Shows celebration notification
+        // - Updates badge statistics
+        // - Saves progress
+        function earnBadge(badgeId) {
+            if (!window.badgeTracker) return;
+            
+            const badge = window.badgeTracker.badges[badgeId];
+            if (!badge || badge.earned) return;
+            
+            // Mark badge as earned
+            badge.earned = true;
+            
+            // Update badge statistics
+            window.badgeTracker.stats.badgesEarned++;
+            
+            // Show celebration notification
+            window.badgeTracker.showBadgeNotification(badgeId);
+            
+            // Save progress
+            window.badgeTracker.saveData();
+            window.badgeTracker.updateDisplay();
+        }
+        
+        // 3. Create a function called showBadgeNotification(badgeId) that:
+        // - Shows a sliding notification from the right
+        // - Displays badge icon, name, and 'Badge Earned!' message
+        // - Auto-removes after 3 seconds
+        // - Uses the CSS animation styles provided
+                function showBadgeNotification(badgeId) {
+            const badgeNames = {
+                // STARTER BADGES
+                'first-haven-chat': 'First Haven Chat',
+                'first-message': 'First Conversation',
+
+                // CONSISTENCY BADGES
+                '3-day-streak': '3-Day Haven Streak',
+                '7-day-streak': '7-Day Haven Streak',
+                'month-streak': 'Monthly Master',
+
+                // CONVERSATION MILESTONES
+                'ei-explorer': 'EI Explorer',
+                'ei-regular': 'Haven EI Regular',
+                'ei-champion': 'EI Champion',
+
+                // EMOTIONAL GROWTH BADGES
+                'growth-seeker': 'Growth Seeker',
+                'mindfulness-master': 'Mindfulness Master',
+
+                // LIFE SKILLS BADGES
+                'comfort-zone-warrior': 'Comfort Zone Warrior',
+                'boundary-builder': 'Boundary Builder',
+                'crisis-overcomer': 'Crisis Supporter',
+
+                // WELLNESS BADGES
+                'self-care-champion': 'Self-Care Champion',
+                'gratitude-practitioner': 'Gratitude Practitioner',
+
+                // DAILY HABIT BADGES
+                'morning-gratitude': 'Morning Gratitude',
+                'daily-zen': 'Daily Zen',
+                'mood-master': 'Mood Master',
+                'self-love-champion': 'Self-Love Champion',
+                'connection-keeper': 'Connection Keeper',
+                'work-break-warrior': 'Work Break Warrior',
+
+                // WEEKLY CHALLENGE BADGES
+                'weekly-warrior': 'Weekly Warrior',
+                'journal-enthusiast': 'Journal Enthusiast',
+                'growth-sprinter': 'Growth Sprinter',
+                'comfort-zone-crusher': 'Comfort Zone Crusher',
+
+                // MONTHLY GOAL BADGES
+                'monthly-champion': 'Monthly Champion',
+                'gratitude-master': 'Gratitude Master',
+                'ei-scholar': 'EI Scholar',
+                'boundary-boss': 'Boundary Boss',
+                'wellness-warrior': 'Wellness Warrior',
+
+                // STREAK MULTIPLIER BADGES
+                'streak-spark': 'Spark',
+                'streak-flame': 'Flame',
+                'streak-inferno': 'Inferno',
+                'streak-phoenix': 'Phoenix',
+
+                // SOCIAL SHARING BADGES
+                'good-vibes-spreader': 'Good Vibes Spreader',
+                'inspiration-ambassador': 'Inspiration Ambassador',
+                'support-circle-builder': 'Support Circle Builder',
+                'wellness-influencer': 'Wellness Influencer',
+                'community-champion': 'Community Champion',
+                'mental-health-advocate': 'Mental Health Advocate',
+
+                // ADVANCED TRACKING BADGES
+                'data-detective': 'Data Detective',
+                'goal-getter': 'Goal Getter',
+                'pattern-master': 'Pattern Master',
+
+                // SEASONAL CHALLENGE BADGES
+                'spring-awakening': 'Spring Awakening',
+                'summer-shine': 'Summer Shine',
+                'autumn-wisdom': 'Autumn Wisdom',
+                'winter-strength': 'Winter Strength'
+            };
+            
+            const badgeName = badgeNames[badgeId] || 'New Badge';
+            
+            // Create notification with sliding animation from the right
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: -400px;
+                background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 15px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 1000;
+                width: 300px;
+                transform: translateX(0);
+                transition: right 0.5s ease-out;
+            `;
+            
+            notification.innerHTML = `
+                <div style="font-size: 2em; margin-bottom: 10px;">🏆</div>
+                <div style="font-weight: bold; margin-bottom: 5px; font-size: 1.1em;">Badge Earned!</div>
+                <div style="font-size: 1em;">${badgeName}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Trigger slide-in animation
+            setTimeout(() => {
+                notification.style.right = '20px';
+            }, 100);
+            
+            // Auto-remove after 3 seconds with slide-out animation
+            setTimeout(() => {
+                notification.style.right = '-400px';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 500);
+            }, 3000);
+        }
+        
+        function trackJournalBadge(badgeType) {
+            if (!window.badgeTracker) return;
+            
+            const journalProgress = JSON.parse(localStorage.getItem('haven_journal_progress') || '{}');
+            const currentProgress = journalProgress[badgeType] || 0;
+            journalProgress[badgeType] = currentProgress + 1;
+            localStorage.setItem('haven_journal_progress', JSON.stringify(journalProgress));
+            
+            // Update specific badge based on type
+            switch(badgeType) {
+                case 'gratitude':
+                    window.badgeTracker.updateProgress('gratitude-practitioner', currentProgress + 1);
+                    break;
+                case 'self-care':
+                    window.badgeTracker.updateProgress('self-care-champion', currentProgress + 1);
+                    break;
+                case 'mindfulness':
+                    window.badgeTracker.updateProgress('mindfulness-master', 1);
+                    break;
+                case 'growth':
+                    window.badgeTracker.updateProgress('growth-seeker', 1);
+                    break;
+            }
+        }
+
+        function trackPracticeBadge(practiceType) {
+            if (!window.badgeTracker) return;
+            
+            const practiceProgress = JSON.parse(localStorage.getItem('haven_practice_progress') || '{}');
+            const currentProgress = practiceProgress[practiceType] || 0;
+            practiceProgress[practiceType] = currentProgress + 1;
+            localStorage.setItem('haven_practice_progress', JSON.stringify(practiceProgress));
+            
+            // Update specific badge based on practice type
+            switch(practiceType) {
+                case 'mindfulness':
+                    window.badgeTracker.updateProgress('mindfulness-master', 1);
+                    break;
+                case 'boundary-setting':
+                    window.badgeTracker.updateProgress('boundary-builder', 1);
+                    break;
+                case 'comfort-zone':
+                    window.badgeTracker.updateProgress('comfort-zone-warrior', 1);
+                    break;
+                case 'crisis-support':
+                    window.badgeTracker.updateProgress('crisis-overcomer', 1);
+                    break;
+            }
+        }
+
+        function trackSocialBadge(shareType) {
+            if (!window.badgeTracker) return;
+            
+            const socialProgress = JSON.parse(localStorage.getItem('haven_social_progress') || '{}');
+            const currentProgress = socialProgress[shareType] || 0;
+            socialProgress[shareType] = currentProgress + 1;
+            localStorage.setItem('haven_social_progress', JSON.stringify(socialProgress));
+            
+            // Update specific badge based on share type
+            switch(shareType) {
+                case 'badge':
+                    // This is handled by the shareBadge function
+                    break;
+                case 'journal':
+                    window.badgeTracker.updateProgress('growth-seeker', 1);
+                    break;
+                case 'insight':
+                    window.badgeTracker.updateProgress('growth-seeker', 1);
+                    break;
+            }
+        }
+
+
+
+        function checkBadgeCompletion(badgeId) {
+            if (!window.badgeTracker) return false;
+            
+            const badge = window.badgeTracker.badges[badgeId];
+            if (!badge) return false;
+            
+            return badge.progress >= badge.max && !badge.earned;
+        }
+
+        // Initialize badge tracker
+        const badgeTracker = new BadgeTracker();
+
+        // Make it globally available
+        window.badgeTracker = badgeTracker;
+
+        // Load existing data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            badgeTracker.updateDisplay();
+            
+            // Load manual badge progress from localStorage
+            const journalProgress = JSON.parse(localStorage.getItem('haven_journal_progress') || '{}');
+            const practiceProgress = JSON.parse(localStorage.getItem('haven_practice_progress') || '{}');
+            const socialProgress = JSON.parse(localStorage.getItem('haven_social_progress') || '{}');
+            const badgeProgress = JSON.parse(localStorage.getItem('haven_badge_progress') || '{}');
+            
+            // Apply journal progress
+            if (journalProgress.gratitude) {
+                badgeTracker.updateProgress('gratitude-practitioner', journalProgress.gratitude);
+            }
+            if (journalProgress['self-care']) {
+                badgeTracker.updateProgress('self-care-champion', journalProgress['self-care']);
+            }
+            if (journalProgress.mindfulness) {
+                badgeTracker.updateProgress('mindfulness-master', 1);
+            }
+            if (journalProgress.growth) {
+                badgeTracker.updateProgress('growth-seeker', 1);
+            }
+            
+            // Apply practice progress
+            if (practiceProgress.mindfulness) {
+                badgeTracker.updateProgress('mindfulness-master', 1);
+            }
+            if (practiceProgress['boundary-setting']) {
+                badgeTracker.updateProgress('boundary-builder', 1);
+            }
+            if (practiceProgress['comfort-zone']) {
+                badgeTracker.updateProgress('comfort-zone-warrior', 1);
+            }
+            if (practiceProgress['crisis-support']) {
+                badgeTracker.updateProgress('crisis-overcomer', 1);
+            }
+            
+            // Apply social progress
+            if (socialProgress.journal || socialProgress.insight) {
+                badgeTracker.updateProgress('growth-seeker', 1);
+            }
+            
+            // Apply general badge progress
+            Object.keys(badgeProgress).forEach(badgeId => {
+                badgeTracker.updateProgress(badgeId, badgeProgress[badgeId]);
+            });
+            
+            // Check for self-compassion badge from journal
+            const compassionProgress = JSON.parse(localStorage.getItem('haven_compassion_progress') || '{}');
+            const compassionBadges = JSON.parse(localStorage.getItem('haven_compassion_badges') || '[]');
+            
+            if (compassionBadges.length > 0) {
+                badgeTracker.updateProgress('self-compassion-champion', 1);
+            }
+            
+            // Load weekly badge progress
+            const weeklyMessages = JSON.parse(localStorage.getItem('haven_weekly_messages') || '{}');
+            const weeklyJournals = JSON.parse(localStorage.getItem('haven_weekly_journals') || '{}');
+            const weeklyActivities = JSON.parse(localStorage.getItem('haven_weekly_activities') || '{}');
+            const weeklyComfortZone = JSON.parse(localStorage.getItem('haven_weekly_comfort_zone') || '{}');
+            
+            const currentWeek = badgeTracker.getWeekKey();
+            
+            // Load weekly warrior progress
+            if (weeklyMessages[currentWeek]) {
+                badgeTracker.updateProgress('weekly-warrior', Math.min(weeklyMessages[currentWeek], 5));
+            }
+            
+            // Load journal enthusiast progress
+            if (weeklyJournals[currentWeek]) {
+                badgeTracker.updateProgress('journal-enthusiast', Math.min(weeklyJournals[currentWeek], 3));
+            }
+            
+            // Load growth sprinter progress
+            if (weeklyActivities[currentWeek]) {
+                badgeTracker.updateProgress('growth-sprinter', Math.min(weeklyActivities[currentWeek].length, 4));
+            }
+            
+            // Load comfort zone crusher progress
+            if (weeklyComfortZone[currentWeek]) {
+                badgeTracker.updateProgress('comfort-zone-crusher', Math.min(weeklyComfortZone[currentWeek].length, 2));
+            }
+            
+            // Load monthly badge progress
+            const monthlyActivities = JSON.parse(localStorage.getItem('haven_monthly_activities') || '{}');
+            const currentMonth = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+            
+            if (monthlyActivities[currentMonth]) {
+                // Load monthly champion progress (daily activity)
+                if (monthlyActivities[currentMonth].daily_activity) {
+                    badgeTracker.updateProgress('monthly-champion', Math.min(monthlyActivities[currentMonth].daily_activity, 20));
+                }
+                
+                // Load gratitude master progress (gratitude journal entries)
+                if (monthlyActivities[currentMonth].gratitude_journal) {
+                    badgeTracker.updateProgress('gratitude-master', Math.min(monthlyActivities[currentMonth].gratitude_journal, 15));
+                }
+                
+                // Load EI scholar progress (conversations)
+                if (monthlyActivities[currentMonth].conversations) {
+                    badgeTracker.updateProgress('ei-scholar', Math.min(monthlyActivities[currentMonth].conversations, 30));
+                }
+                
+                // Load boundary boss progress (boundary practice)
+                if (monthlyActivities[currentMonth].boundary_practice) {
+                    badgeTracker.updateProgress('boundary-boss', Math.min(monthlyActivities[currentMonth].boundary_practice, 8));
+                }
+                
+                // Load wellness warrior progress (wellness activities)
+                if (monthlyActivities[currentMonth].wellness_activity) {
+                    badgeTracker.updateProgress('wellness-warrior', Math.min(monthlyActivities[currentMonth].wellness_activity, 25));
+                }
+            }
+            
+            // Load streak multiplier badge progress
+            // These are permanent badges that track current streak
+            const currentStreak = badgeTracker.stats.currentStreak;
+            badgeTracker.updateProgress('streak-spark', Math.min(currentStreak, 3));
+            badgeTracker.updateProgress('streak-flame', Math.min(currentStreak, 7));
+            badgeTracker.updateProgress('streak-inferno', Math.min(currentStreak, 30));
+            badgeTracker.updateProgress('streak-phoenix', Math.min(currentStreak, 100));
+            
+            // Load social sharing badge progress
+            const socialSharingProgress = JSON.parse(localStorage.getItem('haven_social_progress') || '{}');
+            if (socialSharingProgress.good_vibes_spreader) {
+                badgeTracker.updateProgress('good-vibes-spreader', socialSharingProgress.good_vibes_spreader);
+            }
+            if (socialSharingProgress.inspiration_ambassador) {
+                badgeTracker.updateProgress('inspiration-ambassador', socialSharingProgress.inspiration_ambassador);
+            }
+            if (socialSharingProgress.support_circle_builder) {
+                badgeTracker.updateProgress('support-circle-builder', socialSharingProgress.support_circle_builder);
+            }
+            if (socialSharingProgress.wellness_influencer) {
+                badgeTracker.updateProgress('wellness-influencer', socialSharingProgress.wellness_influencer);
+            }
+            if (socialSharingProgress.community_champion) {
+                badgeTracker.updateProgress('community-champion', socialSharingProgress.community_champion);
+            }
+            if (socialSharingProgress.mental_health_advocate) {
+                badgeTracker.updateProgress('mental-health-advocate', socialSharingProgress.mental_health_advocate);
+            }
+            
+            // Load advanced tracking badge progress
+            const goalProgress = JSON.parse(localStorage.getItem('haven_goal_progress') || '{}');
+            const patternProgress = JSON.parse(localStorage.getItem('haven_pattern_progress') || '{}');
+            
+            // Load goal getter progress (total goals achieved)
+            const totalGoals = Object.values(goalProgress).reduce((sum, count) => sum + count, 0);
+            if (totalGoals > 0) {
+                badgeTracker.updateProgress('goal-getter', Math.min(totalGoals, 10));
+            }
+            
+            // Load pattern master progress (unique patterns broken)
+            const totalPatterns = Object.keys(patternProgress).length;
+            if (totalPatterns > 0) {
+                badgeTracker.updateProgress('pattern-master', Math.min(totalPatterns, 5));
+            }
+            
+            // Load data detective progress (days of analysis)
+            const dataAnalysisProgress = JSON.parse(localStorage.getItem('haven_data_analysis_progress') || '{}');
+            const daysAnalyzed = dataAnalysisProgress.days_analyzed || 0;
+            if (daysAnalyzed > 0) {
+                badgeTracker.updateProgress('data-detective', Math.min(daysAnalyzed, 30));
+            }
+        });
+
+        // Enhanced social sharing and referral system
+        function shareThisBadge(badgeId) {
+            // Get current user ID (you can replace this with actual user authentication)
+            const userId = localStorage.getItem('haven_user_id') || 'user_12345';
+            
+            // Generate the share URL for this specific badge using user ID
+            const shareUrl = `${window.location.origin}/share/badge/${badgeId}/${userId}`;
+            
+            // Open the individual badge share page
+            window.open(shareUrl, '_blank');
+        }
+        
+        function shareBadge(badgeId) {
+            const badgeNames = {
+                // STARTER BADGES
+                'first-haven-chat': 'First Haven Chat',
+                'first-message': 'First Conversation',
+
+                // CONSISTENCY BADGES
+                '3-day-streak': '3-Day Haven Streak',
+                '7-day-streak': '7-Day Haven Streak',
+                'month-streak': 'Monthly Master',
+
+                // CONVERSATION MILESTONES
+                'ei-explorer': 'EI Explorer',
+                'ei-regular': 'Haven EI Regular',
+                'ei-champion': 'EI Champion',
+
+                // EMOTIONAL GROWTH BADGES
+                'growth-seeker': 'Growth Seeker',
+                'mindfulness-master': 'Mindfulness Master',
+
+                // LIFE SKILLS BADGES
+                'comfort-zone-warrior': 'Comfort Zone Warrior',
+                'boundary-builder': 'Boundary Builder',
+                'crisis-overcomer': 'Crisis Supporter',
+
+                // WELLNESS BADGES
+                'self-care-champion': 'Self-Care Champion',
+                'gratitude-practitioner': 'Gratitude Practitioner',
+
+                // DAILY HABIT BADGES
+                'morning-gratitude': 'Morning Gratitude',
+                'daily-zen': 'Daily Zen',
+                'mood-master': 'Mood Master',
+                'self-love-champion': 'Self-Love Champion',
+                'connection-keeper': 'Connection Keeper',
+                'work-break-warrior': 'Work Break Warrior',
+
+                // WEEKLY CHALLENGE BADGES
+                'weekly-warrior': 'Weekly Warrior',
+                'journal-enthusiast': 'Journal Enthusiast',
+                'growth-sprinter': 'Growth Sprinter',
+                'comfort-zone-crusher': 'Comfort Zone Crusher',
+
+                // MONTHLY GOAL BADGES
+                'monthly-champion': 'Monthly Champion',
+                'gratitude-master': 'Gratitude Master',
+                'ei-scholar': 'EI Scholar',
+                'boundary-boss': 'Boundary Boss',
+                'wellness-warrior': 'Wellness Warrior',
+
+                // STREAK MULTIPLIER BADGES
+                'streak-spark': 'Spark',
+                'streak-flame': 'Flame',
+                'streak-inferno': 'Inferno',
+                'streak-phoenix': 'Phoenix',
+
+                // SOCIAL SHARING BADGES
+                'good-vibes-spreader': 'Good Vibes Spreader',
+                'inspiration-ambassador': 'Inspiration Ambassador',
+                'support-circle-builder': 'Support Circle Builder',
+                'wellness-influencer': 'Wellness Influencer',
+                'community-champion': 'Community Champion',
+                'mental-health-advocate': 'Mental Health Advocate',
+
+                // ADVANCED TRACKING BADGES
+                'data-detective': 'Data Detective',
+                'goal-getter': 'Goal Getter',
+                'pattern-master': 'Pattern Master',
+
+                // SEASONAL CHALLENGE BADGES
+                'spring-awakening': 'Spring Awakening',
+                'summer-shine': 'Summer Shine',
+                'autumn-wisdom': 'Autumn Wisdom',
+                'winter-strength': 'Winter Strength'
+            };
+            
+            const badgeName = badgeNames[badgeId] || 'Haven Badge';
+            const shareText = `I just earned the "${badgeName}" badge on Haven! 🏆 #EmotionalIntelligence #Haven`;
+            
+            // Track social sharing badge
+            if (typeof trackSocialBadge === 'function') {
+                trackSocialBadge('badge_share');
+            }
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Haven Badge Earned!',
+                    text: shareText,
+                    url: window.location.href
+                }).then(() => {
+                    showShareSuccess();
+                }).catch(console.error);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const textArea = document.createElement('textarea');
+                textArea.value = shareText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                showShareSuccess();
+            }
+        }
+
+        function generateReferralCode() {
+            const userId = localStorage.getItem('haven_user_id') || Math.random().toString(36).substr(2, 9);
+            const referralCode = `HAVEN-${userId.toUpperCase()}`;
+            localStorage.setItem('haven_user_id', userId);
+            localStorage.setItem('haven_referral_code', referralCode);
+            return referralCode;
+        }
+
+        function shareReferral() {
+            const referralCode = generateReferralCode();
+            const shareText = `Join me on Haven - your AI companion for emotional intelligence! 🌟\n\nUse my referral code: ${referralCode}\n\n#Haven #EmotionalIntelligence #AICompanion`;
+            
+            // Track referral sharing
+            if (typeof trackSocialBadge === 'function') {
+                trackSocialBadge('inspiration_ambassador');
+            }
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Join Haven with me!',
+                    text: shareText,
+                    url: window.location.href
+                }).then(() => {
+                    showShareSuccess();
+                }).catch(console.error);
+            } else {
+                // Fallback
+                const textArea = document.createElement('textarea');
+                textArea.value = shareText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                showShareSuccess();
+            }
+        }
+
+        function showShareSuccess() {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                font-weight: bold;
+                animation: slideIn 0.5s ease-out;
+            `;
+            notification.innerHTML = `✨ Shared successfully! 🌟`;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function checkReferralCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referralCode = urlParams.get('ref');
+            
+            if (referralCode) {
+                // Store referral code
+                localStorage.setItem('haven_referral_from', referralCode);
+                
+                // Track referral badge for the referrer
+                if (typeof trackSocialBadge === 'function') {
+                    trackSocialBadge('inspiration_ambassador');
+                }
+                
+                // Show referral success message
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    font-weight: bold;
+                    animation: slideIn 0.5s ease-out;
+                `;
+                notification.innerHTML = `🎉 Welcome! Referral code applied! 🌟`;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+        }
+
+        // Check for referral code on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkReferralCode();
+        });
+    </script>
+</body>
+</html> 

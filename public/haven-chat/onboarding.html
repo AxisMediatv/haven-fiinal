@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haven - Welcome to Your Journey</title>
+    <meta name="description" content="Set up your personalized Haven experience with mood and qualities selection.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFF5E1 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 98%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 20px;
+        }
+
+        .onboarding-header {
+            background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            border-radius: 15px;
+        }
+
+        .onboarding-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .onboarding-header p {
+            opacity: 0.9;
+            font-size: 1.2em;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: white;
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .onboarding-content {
+            padding: 40px 30px;
+            flex: 1;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .step-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .step-title h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .step-title p {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.5;
+        }
+
+        /* Mood Selection Grid */
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mood-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .mood-card {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9em;
+            min-width: 200px;
+        }
+
+        .mood-card:nth-child(1) { background: #FF6B8A; } /* Motherly - Pink */
+        .mood-card:nth-child(2) { background: #FF8A65; } /* Fatherly - Orange */
+        .mood-card:nth-child(3) { background: #9C27B0; } /* Faith-Centered - Purple */
+        .mood-card:nth-child(4) { background: #FF8A65; } /* Best Friend - Orange */
+        .mood-card:nth-child(5) { background: #FF6B8A; } /* Wise Mentor - Pink */
+        .mood-card:nth-child(6) { background: #FFD93D; } /* Solution Coach - Yellow */
+        .mood-card:nth-child(7) { background: #FF6B8A; } /* Calm & Centering - Pink */
+        .mood-card:nth-child(8) { background: #FF6B8A; } /* Balanced Mix - Reddish-orange */
+
+        .mood-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .mood-card.selected {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .mood-name {
+            font-weight: 600;
+            color: white;
+            font-size: 0.9em;
+            line-height: 1.3;
+        }
+
+        /* Qualities Selection */
+        .qualities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .quality-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .quality-card:hover {
+            border-color: #FF6B8A;
+            transform: translateY(-2px);
+        }
+
+        .quality-card.selected {
+            border-color: #FF6B8A;
+            background: rgba(255, 107, 138, 0.05);
+        }
+
+        .quality-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .quality-card.selected .quality-checkbox {
+            background: #FF6B8A;
+            border-color: #FF6B8A;
+            color: white;
+        }
+
+        .quality-content {
+            flex: 1;
+        }
+
+        .quality-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .quality-description {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        /* Navigation Buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #FF6B8A;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 138, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #eee;
+        }
+
+        .btn-secondary:hover {
+            border-color: #FF6B8A;
+            color: #FF6B8A;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success Step */
+        .success-step {
+            text-align: center;
+            padding: 60px 30px;
+        }
+
+        .success-icon {
+            font-size: 5em;
+            margin-bottom: 30px;
+            color: #28a745;
+        }
+
+        .success-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .success-message {
+            color: #666;
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+            
+            .onboarding-content {
+                padding: 30px 20px;
+            }
+            
+            .mood-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .qualities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .onboarding-header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="onboarding-header">
+            <h1>Welcome to Haven</h1>
+            <p>Let's personalize your emotional intelligence journey</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div class="onboarding-content">
+            <!-- Step 1: Welcome -->
+            <div class="step active" id="step1">
+                <div class="step-title">
+                    <h2>Hi there, I'm Haven.</h2>
+                    <p>I'm here to listen, understand, and support you through anything. You're never alone in this.</p>
+                </div>
+                
+                <div style="text-align: center; margin: 40px 0;">
+                                            <h3 style="color: #333; margin-bottom: 15px;">Start Your Free Trial Now and see Haven is a good fit for you.</h3>
+                    <p style="color: #666; line-height: 1.6;">
+                        Think of me as that friend who's always available - ready to chat, help you figure things out, and celebrate your growth. Let's create something that feels just right for you.
+                    </p>
+                </div>
+
+                <div class="nav-buttons">
+                    <div></div>
+                                            <button class="btn btn-primary" onclick="nextStep()">Start Free Trial Now</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Mood Selection -->
+            <div class="step" id="step2">
+                <div class="step-title">
+                    <h2>Choose Your Haven's Energy</h2>
+                    <p>What energy feels most supportive to you?</p>
+                </div>
+
+                <div class="mood-grid">
+                    <div class="mood-card" data-mood="motherly">
+                        <div class="mood-name">Motherly - Sweet & Nurturing</div>
+                    </div>
+
+                    <div class="mood-card" data-mood="fatherly">
+                        <div class="mood-name">Fatherly - Strong & Bold</div>
+                    </div>
+
+                    <div class="mood-card" data-mood="faith-centered">
+                        <div class="mood-name">Faith-Centered & Wise</div>
+                    </div>
+
+                    <div class="mood-card" data-mood="best-friend">
+                        <div class="mood-name">Best Friend Energy - conversation and humor</div>
+                    </div>
+
+                    <div class="mood-card" data-mood="wise-mentor">
+                        <div class="mood-name">Wise Mentor - gentle but transformative</div>
+                    </div>
+
+                    <div class="mood-card" data-mood="solution-coach">
+                        <div class="mood-name">Solution-Focused Coach - Practical action-oriented</div>
+                    </div>
+
+                    <div class="mood-card" data-mood="calm-centering">
+                        <div class="mood-name">Calm & Centering - Meditation and mindfulness</div>
+                    </div>
+
+                    <div class="mood-card" data-mood="balanced-mix">
+                        <div class="mood-name">Balanced Mix</div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn btn-primary" id="nextBtn2" onclick="nextStep()" disabled>Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Qualities Selection -->
+            <div class="step" id="step3">
+                <div class="step-title">
+                    <h2>Select the qualities that would help you most</h2>
+                    <p>Pick as many as you'd like</p>
+                </div>
+
+                <div class="qualities-grid">
+                    <div class="quality-card" data-quality="non-judgmental">
+                        <div class="quality-checkbox"></div>
+                        <div class="quality-content">
+                            <div class="quality-name">Non-judgmental listener</div>
+                            <div class="quality-description">I'll listen without judgment and create a safe space for you to share</div>
+                        </div>
+                    </div>
+
+                    <div class="quality-card" data-quality="tough-love">
+                        <div class="quality-checkbox"></div>
+                        <div class="quality-content">
+                            <div class="quality-name">Loving tough love when needed</div>
+                            <div class="quality-description">I'll be direct and honest while still being caring and supportive</div>
+                        </div>
+                    </div>
+
+                    <div class="quality-card" data-quality="empathetic">
+                        <div class="quality-checkbox"></div>
+                        <div class="quality-content">
+                            <div class="quality-name">Deeply empathetic and caring</div>
+                            <div class="quality-description">I'll understand your feelings and show genuine care for your wellbeing</div>
+                        </div>
+                    </div>
+
+                    <div class="quality-card" data-quality="faith-centered">
+                        <div class="quality-checkbox"></div>
+                        <div class="quality-content">
+                            <div class="quality-name">Faith-centered perspective</div>
+                            <div class="quality-description">I'll incorporate spiritual wisdom and faith-based guidance when helpful</div>
+                        </div>
+                    </div>
+
+                    <div class="quality-card" data-quality="problem-solver">
+                        <div class="quality-checkbox"></div>
+                        <div class="quality-content">
+                            <div class="quality-name">Direct problem-solver</div>
+                            <div class="quality-description">I'll help you find practical solutions and actionable steps forward</div>
+                        </div>
+                    </div>
+
+                    <div class="quality-card" data-quality="encourager">
+                        <div class="quality-checkbox"></div>
+                        <div class="quality-content">
+                            <div class="quality-name">Gentle encourager</div>
+                            <div class="quality-description">I'll provide gentle encouragement and celebrate your progress</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevStep()">Back</button>
+                    <button class="btn btn-primary" onclick="nextStep()">Save & Continue</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Success -->
+            <div class="step" id="step4">
+                <div class="success-step">
+                    <div class="success-icon">✨</div>
+                    <div class="success-title">Perfect! Haven is ready to support you.</div>
+                    <div class="success-message">
+                        Your personalized Haven experience is all set up. I'm here to support you with the energy and qualities that feel most helpful to you.
+                    </div>
+                                         <button class="btn btn-primary" onclick="completeOnboarding()">Start Your Free Trial</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let selectedMood = null;
+        let selectedQualities = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgress();
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Mood selection
+            document.querySelectorAll('.mood-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected from all cards
+                    document.querySelectorAll('.mood-card').forEach(c => c.classList.remove('selected'));
+                    // Add selected to clicked card
+                    this.classList.add('selected');
+                    selectedMood = this.getAttribute('data-mood');
+                    
+                    // Enable next button
+                    document.getElementById('nextBtn2').disabled = false;
+                });
+            });
+
+            // Quality selection
+            document.querySelectorAll('.quality-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    this.classList.toggle('selected');
+                    const quality = this.getAttribute('data-quality');
+                    
+                    if (this.classList.contains('selected')) {
+                        if (!selectedQualities.includes(quality)) {
+                            selectedQualities.push(quality);
+                        }
+                    } else {
+                        selectedQualities = selectedQualities.filter(q => q !== quality);
+                    }
+                });
+            });
+        }
+
+        // Navigation functions
+        function nextStep() {
+            if (currentStep < 4) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateProgress();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                currentStep--;
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentStep / 4) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        // Complete onboarding
+        function completeOnboarding() {
+            // Save selections to localStorage
+            const onboardingData = {
+                mood: selectedMood,
+                qualities: selectedQualities,
+                completedAt: new Date().toISOString(),
+                onboardingComplete: true
+            };
+            
+            localStorage.setItem('havenOnboarding', JSON.stringify(onboardingData));
+            localStorage.setItem('havenUserMood', selectedMood);
+            localStorage.setItem('havenUserQualities', JSON.stringify(selectedQualities));
+            
+            // Save to account settings
+            saveToAccount();
+            
+            // Redirect to chat
+            window.location.href = 'index.html';
+        }
+
+        // Save to account
+        async function saveToAccount() {
+            try {
+                const response = await fetch('/api/save-onboarding', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mood: selectedMood,
+                        qualities: selectedQualities,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Onboarding saved:', data);
+            } catch (error) {
+                console.error('Error saving onboarding:', error);
+            }
+        }
+
+        // Auto-select qualities based on mood
+        function autoSelectQualities(mood) {
+            const qualityMappings = {
+                'motherly': ['empathetic', 'encourager'],
+                'fatherly': ['tough-love', 'problem-solver'],
+                'faith-centered': ['faith-centered', 'empathetic'],
+                'best-friend': ['non-judgmental', 'encourager'],
+                'wise-mentor': ['empathetic', 'problem-solver'],
+                'solution-coach': ['problem-solver', 'tough-love'],
+                'calm-centering': ['empathetic', 'encourager'],
+                'balanced-mix': ['non-judgmental', 'empathetic', 'problem-solver'],
+                'auto-pick': ['empathetic', 'non-judgmental', 'encourager']
+            };
+
+            if (mood && qualityMappings[mood]) {
+                qualityMappings[mood].forEach(quality => {
+                    const card = document.querySelector(`[data-quality="${quality}"]`);
+                    if (card) {
+                        card.classList.add('selected');
+                        if (!selectedQualities.includes(quality)) {
+                            selectedQualities.push(quality);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Update qualities when mood changes
+        document.addEventListener('moodSelected', function(e) {
+            autoSelectQualities(e.detail.mood);
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haven - My Badge Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: white;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: #636e72;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            background: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .filter-tab.active {
+            background: #4CAF50;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .badges-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .earned-badge {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff3cd 100%);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .earned-badge:hover {
+            transform: translateY(-5px);
+        }
+
+        .badge-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+        }
+
+        .badge-details {
+            flex: 1;
+        }
+
+        .badge-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 5px;
+        }
+
+        .badge-desc {
+            color: #636e72;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .badge-meta {
+            background: rgba(255,255,255,0.7);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .badge-earned-date {
+            font-size: 0.85rem;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+
+        .badge-earned-count {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .reset-info {
+            font-size: 0.8rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .earned-crown {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #ffd700;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #636e72;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .empty-desc {
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .back-nav {
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .achievement-highlight {
+            background: linear-gradient(135deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .rarity-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .rarity-common { background: #e8f5e8; color: #2e7d32; }
+        .rarity-uncommon { background: #e3f2fd; color: #1565c0; }
+        .rarity-rare { background: #fce4ec; color: #c2185b; }
+        .rarity-epic { background: #f3e5f5; color: #7b1fa2; }
+        .rarity-legendary { background: #fff3e0; color: #ef6c00; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .badges-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation -->
+        <div class="back-nav">
+            <a href="badges.html" class="back-link">
+                ← Back to Badges
+            </a>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">🏆 My Badge Collection</h1>
+            <p class="page-subtitle">Your emotional intelligence achievements and milestones</p>
+            
+            <!-- Stats Overview -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalEarned">12</div>
+                    <div class="stat-label">Badges Earned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalConversations">47</div>
+                    <div class="stat-label">Conversations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="streakDays">8</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completionRate">24%</div>
+                    <div class="stat-label">Collection Complete</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterBadges('all')">🏆 All Earned</button>
+            <button class="filter-tab" onclick="filterBadges('daily')">☀️ Daily</button>
+            <button class="filter-tab" onclick="filterBadges('weekly')">📅 Weekly</button>
+            <button class="filter-tab" onclick="filterBadges('monthly')">🗓️ Monthly</button>
+            <button class="filter-tab" onclick="filterBadges('seasonal')">🌸 Seasonal</button>
+            <button class="filter-tab" onclick="filterBadges('milestone')">🎯 Milestones</button>
+        </div>
+
+        <!-- Badges Collection -->
+        <div class="badges-section">
+            <div class="section-title">
+                <span id="sectionIcon">🏆</span>
+                <span id="sectionTitle">All Earned Badges</span>
+                <span id="sectionCount">(12)</span>
+            </div>
+            
+            <div class="badges-grid" id="earnedBadgesGrid">
+                <!-- Sample earned badges will be populated by JavaScript -->
+            </div>
+            
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">🏆</div>
+                <div class="empty-title">No badges earned yet!</div>
+                <div class="empty-desc">Start your emotional intelligence journey to earn your first badge</div>
+                <a href="#" class="cta-button" onclick="goToChat()">Start Chatting with Haven</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real badge tracking system integration
+        let earnedBadges = [];
+        let currentFilter = 'all';
+        let badgeTracker = null;
+
+        // Badge names mapping (matching the main badges.html)
+        const badgeNames = {
+            // STARTER BADGES
+            'first-haven-chat': 'First Haven Chat',
+            'first-message': 'First Conversation',
+            
+            // CONSISTENCY BADGES
+            '3-day-streak': '3-Day Haven Streak',
+            '7-day-streak': '7-Day Haven Streak',
+            'month-streak': 'Monthly Master',
+            
+            // CONVERSATION MILESTONES
+            'ei-explorer': 'EI Explorer',
+            'ei-regular': 'Haven EI Regular',
+            'ei-champion': 'EI Champion',
+            
+            // EMOTIONAL GROWTH BADGES
+            'growth-seeker': 'Growth Seeker',
+            'mindfulness-master': 'Mindfulness Master',
+            
+            // LIFE SKILLS BADGES
+            'comfort-zone-warrior': 'Comfort Zone Warrior',
+            'boundary-builder': 'Boundary Builder',
+            'crisis-overcomer': 'Crisis Supporter',
+            
+            // WELLNESS BADGES
+            'self-care-champion': 'Self-Care Champion',
+            'gratitude-practitioner': 'Gratitude Practitioner',
+            
+            // DAILY HABIT BADGES
+            'morning-gratitude': 'Morning Gratitude',
+            'daily-zen': 'Daily Zen',
+            'mood-master': 'Mood Master',
+            'self-love-champion': 'Self-Love Champion',
+            'connection-keeper': 'Connection Keeper',
+            'work-break-warrior': 'Work Break Warrior',
+            
+            // WEEKLY CHALLENGE BADGES
+            'weekly-warrior': 'Weekly Warrior',
+            'journal-enthusiast': 'Journal Enthusiast',
+            'growth-sprinter': 'Growth Sprinter',
+            'comfort-zone-crusher': 'Comfort Zone Crusher',
+            
+            // MONTHLY GOAL BADGES
+            'monthly-champion': 'Monthly Champion',
+            'gratitude-master': 'Gratitude Master',
+            'ei-scholar': 'EI Scholar',
+            'boundary-boss': 'Boundary Boss',
+            'wellness-warrior': 'Wellness Warrior',
+            
+            // STREAK MULTIPLIER BADGES
+            'streak-spark': 'Streak Spark',
+            'streak-flame': 'Streak Flame',
+            'streak-inferno': 'Streak Inferno',
+            'streak-phoenix': 'Streak Phoenix',
+            
+            // SOCIAL SHARING BADGES
+            'good-vibes-spreader': 'Good Vibes Spreader',
+            'inspiration-ambassador': 'Inspiration Ambassador',
+            'support-circle-builder': 'Support Circle Builder',
+            'wellness-influencer': 'Wellness Influencer',
+            'community-champion': 'Community Champion',
+            'mental-health-advocate': 'Mental Health Advocate',
+            
+            // ADVANCED TRACKING BADGES
+            'data-detective': 'Data Detective',
+            'goal-getter': 'Goal Getter',
+            'pattern-master': 'Pattern Master',
+            
+            // SEASONAL CHALLENGE BADGES
+            'spring-awakening': 'Spring Awakening',
+            'summer-shine': 'Summer Shine',
+            'autumn-wisdom': 'Autumn Wisdom',
+            'winter-strength': 'Winter Strength'
+        };
+
+        // Badge descriptions mapping
+        const badgeDescriptions = {
+            'first-haven-chat': 'Started your emotional intelligence journey with Haven',
+            'first-message': 'Began your first meaningful conversation',
+            '3-day-streak': 'Maintained a 3-day activity streak',
+            '7-day-streak': 'Achieved a 7-day activity streak',
+            'month-streak': 'Completed a full month of consistent engagement',
+            'ei-explorer': 'Explored emotional intelligence concepts',
+            'ei-regular': 'Became a regular Haven user',
+            'ei-champion': 'Reached champion level in emotional intelligence',
+            'growth-seeker': 'Actively pursued personal development',
+            'mindfulness-master': 'Mastered daily mindfulness practices',
+            'comfort-zone-warrior': 'Stepped outside your comfort zone',
+            'boundary-builder': 'Set healthy emotional boundaries',
+            'crisis-overcomer': 'Successfully navigated difficult situations',
+            'self-care-champion': 'Prioritized self-care and wellness',
+            'gratitude-practitioner': 'Practiced daily gratitude',
+            'morning-gratitude': 'Started each day with gratitude',
+            'daily-zen': 'Maintained daily zen practices',
+            'mood-master': 'Mastered mood management',
+            'self-love-champion': 'Championed self-love practices',
+            'connection-keeper': 'Maintained meaningful connections',
+            'work-break-warrior': 'Took regular work breaks for wellness',
+            'weekly-warrior': 'Completed weekly challenges',
+            'journal-enthusiast': 'Developed journaling habits',
+            'growth-sprinter': 'Accelerated personal growth',
+            'comfort-zone-crusher': 'Crushed comfort zone limitations',
+            'monthly-champion': 'Achieved monthly goals',
+            'gratitude-master': 'Mastered gratitude practices',
+            'ei-scholar': 'Became an EI scholar',
+            'boundary-boss': 'Became a boundary-setting expert',
+            'wellness-warrior': 'Championed wellness practices',
+            'streak-spark': 'Ignited your streak journey',
+            'streak-flame': 'Fanned the flames of consistency',
+            'streak-inferno': 'Created an inferno of dedication',
+            'streak-phoenix': 'Rose from the ashes to achieve 100 days',
+            'good-vibes-spreader': 'Spread positivity and good energy',
+            'inspiration-ambassador': 'Inspired others with your actions',
+            'support-circle-builder': 'Built a strong support network',
+            'wellness-influencer': 'Influenced others toward wellness',
+            'community-champion': 'Contributed to community growth',
+            'mental-health-advocate': 'Advocated for mental health',
+            'data-detective': 'Analyzed your emotional patterns',
+            'goal-getter': 'Achieved multiple personal goals',
+            'pattern-master': 'Mastered pattern recognition',
+            'spring-awakening': 'Embraced spring renewal and growth',
+            'summer-shine': 'Radiated summer energy and warmth',
+            'autumn-wisdom': 'Gained wisdom through autumn reflection',
+            'winter-strength': 'Built strength during winter challenges'
+        };
+
+        // Badge icons mapping
+        const badgeIcons = {
+            'first-haven-chat': '🌟',
+            'first-message': '💬',
+            '3-day-streak': '🔥',
+            '7-day-streak': '🔥',
+            'month-streak': '🔥',
+            'ei-explorer': '🔍',
+            'ei-regular': '📚',
+            'ei-champion': '🏆',
+            'growth-seeker': '🌱',
+            'mindfulness-master': '🧘',
+            'comfort-zone-warrior': '⚔️',
+            'boundary-builder': '🛡️',
+            'crisis-overcomer': '🆘',
+            'self-care-champion': '💖',
+            'gratitude-practitioner': '🙏',
+            'morning-gratitude': '🌅',
+            'daily-zen': '☯️',
+            'mood-master': '😌',
+            'self-love-champion': '💝',
+            'connection-keeper': '🤝',
+            'work-break-warrior': '☕',
+            'weekly-warrior': '⚡',
+            'journal-enthusiast': '📝',
+            'growth-sprinter': '🏃',
+            'comfort-zone-crusher': '💥',
+            'monthly-champion': '👑',
+            'gratitude-master': '🙏',
+            'ei-scholar': '🎓',
+            'boundary-boss': '👔',
+            'wellness-warrior': '🛡️',
+            'streak-spark': '✨',
+            'streak-flame': '🔥',
+            'streak-inferno': '🔥',
+            'streak-phoenix': '🦅',
+            'good-vibes-spreader': '✨',
+            'inspiration-ambassador': '🌟',
+            'support-circle-builder': '👥',
+            'wellness-influencer': '💫',
+            'community-champion': '🏆',
+            'mental-health-advocate': '💚',
+            'data-detective': '🔍',
+            'goal-getter': '🎯',
+            'pattern-master': '🧩',
+            'spring-awakening': '🌸',
+            'summer-shine': '☀️',
+            'autumn-wisdom': '🍂',
+            'winter-strength': '❄️'
+        };
+
+        // Badge rarity mapping
+        const badgeRarity = {
+            'first-haven-chat': 'common',
+            'first-message': 'common',
+            '3-day-streak': 'common',
+            '7-day-streak': 'uncommon',
+            'month-streak': 'rare',
+            'ei-explorer': 'common',
+            'ei-regular': 'uncommon',
+            'ei-champion': 'epic',
+            'growth-seeker': 'common',
+            'mindfulness-master': 'uncommon',
+            'comfort-zone-warrior': 'rare',
+            'boundary-builder': 'rare',
+            'crisis-overcomer': 'epic',
+            'self-care-champion': 'uncommon',
+            'gratitude-practitioner': 'uncommon',
+            'morning-gratitude': 'common',
+            'daily-zen': 'uncommon',
+            'mood-master': 'uncommon',
+            'self-love-champion': 'uncommon',
+            'connection-keeper': 'common',
+            'work-break-warrior': 'common',
+            'weekly-warrior': 'uncommon',
+            'journal-enthusiast': 'uncommon',
+            'growth-sprinter': 'rare',
+            'comfort-zone-crusher': 'rare',
+            'monthly-champion': 'epic',
+            'gratitude-master': 'rare',
+            'ei-scholar': 'epic',
+            'boundary-boss': 'epic',
+            'wellness-warrior': 'epic',
+            'streak-spark': 'common',
+            'streak-flame': 'uncommon',
+            'streak-inferno': 'rare',
+            'streak-phoenix': 'legendary',
+            'good-vibes-spreader': 'common',
+            'inspiration-ambassador': 'uncommon',
+            'support-circle-builder': 'rare',
+            'wellness-influencer': 'epic',
+            'community-champion': 'epic',
+            'mental-health-advocate': 'legendary',
+            'data-detective': 'rare',
+            'goal-getter': 'uncommon',
+            'pattern-master': 'rare',
+            'spring-awakening': 'epic',
+            'summer-shine': 'epic',
+            'autumn-wisdom': 'epic',
+            'winter-strength': 'epic'
+        };
+
+        // Initialize page
+        function initializePage() {
+            loadRealBadgeData();
+            updateStats();
+            renderBadges();
+        }
+
+        // Load real badge data from localStorage
+        function loadRealBadgeData() {
+            const savedBadges = localStorage.getItem('havenBadges');
+            const savedStats = localStorage.getItem('havenStats');
+            
+            if (savedBadges) {
+                const allBadges = JSON.parse(savedBadges);
+                // Filter to show only earned badges
+                earnedBadges = Object.entries(allBadges)
+                    .filter(([id, badge]) => badge.earned)
+                    .map(([id, badge]) => {
+                        // Calculate times earned based on badge type and reset history
+                        const timesEarned = calculateTimesEarned(badge.id, badge.type);
+                        
+                        return {
+                            id: id,
+                            name: badgeNames[id] || id.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                            description: badgeDescriptions[id] || 'Achievement unlocked through dedication and effort',
+                            icon: badgeIcons[id] || '🏆',
+                            category: badge.type || 'achievement',
+                            rarity: badgeRarity[id] || 'common',
+                            earnedDate: new Date().toISOString(), // We'll use current date as placeholder
+                            timesEarned: timesEarned,
+                            resetType: badge.type || 'permanent',
+                            progress: badge.progress || 0,
+                            max: badge.max || 1,
+                            premium: badge.premium || false
+                        };
+                    });
+            } else {
+                earnedBadges = [];
+            }
+        }
+
+        // Calculate times earned for re-earnable badges
+        function calculateTimesEarned(badgeId, badgeType) {
+            if (badgeType === 'permanent') {
+                return 1; // Permanent badges can only be earned once
+            }
+            
+            // For re-earnable badges, we'll estimate based on how long the badge system has been active
+            // This is a simplified approach - in a real system you'd track actual earn dates
+            const badgeEarnedHistory = localStorage.getItem(`badge_${badgeId}_history`) || '[]';
+            const history = JSON.parse(badgeEarnedHistory);
+            
+            if (history.length > 0) {
+                return history.length;
+            }
+            
+            // If no history exists, estimate based on badge type and current date
+            const now = new Date();
+            const startDate = new Date('2024-01-01'); // Assuming badge system started in 2024
+            const daysSinceStart = Math.floor((now - startDate) / (1000 * 60 * 60 * 24));
+            
+            switch(badgeType) {
+                case 'daily':
+                    return Math.max(1, Math.floor(daysSinceStart / 1));
+                case 'weekly':
+                    return Math.max(1, Math.floor(daysSinceStart / 7));
+                case 'monthly':
+                    return Math.max(1, Math.floor(daysSinceStart / 30));
+                case 'seasonal':
+                    return Math.max(1, Math.floor(daysSinceStart / 90));
+                default:
+                    return 1;
+            }
+        }
+
+        // Update statistics with real data
+        function updateStats() {
+            const totalEarned = earnedBadges.length;
+            
+            // Get real stats from localStorage
+            const savedStats = localStorage.getItem('havenStats');
+            let totalConversations = 0;
+            let streakDays = 0;
+            
+            if (savedStats) {
+                const stats = JSON.parse(savedStats);
+                totalConversations = stats.totalMessages || 0;
+                streakDays = stats.currentStreak || 0;
+            }
+            
+            // Calculate total available badges (this would be the total count from the badge system)
+            const totalAvailable = Object.keys(badgeNames).length;
+            const completionRate = totalAvailable > 0 ? Math.round((totalEarned / totalAvailable) * 100) : 0;
+
+            document.getElementById('totalEarned').textContent = totalEarned;
+            document.getElementById('totalConversations').textContent = totalConversations;
+            document.getElementById('streakDays').textContent = streakDays;
+            document.getElementById('completionRate').textContent = completionRate + '%';
+        }
+
+        // Filter badges by category
+        function filterBadges(category) {
+            currentFilter = category;
+            
+            // Update active tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            renderBadges();
+        }
+
+        // Map badge types to filter categories
+        function getBadgeCategory(badgeType) {
+            switch(badgeType) {
+                case 'daily': return 'daily';
+                case 'weekly': return 'weekly';
+                case 'monthly': return 'monthly';
+                case 'seasonal': return 'seasonal';
+                case 'permanent': return 'milestone';
+                default: return 'milestone';
+            }
+        }
+
+        // Render badges based on current filter
+        function renderBadges() {
+            const filteredBadges = currentFilter === 'all' 
+                ? earnedBadges 
+                : earnedBadges.filter(badge => getBadgeCategory(badge.resetType) === currentFilter);
+
+            const grid = document.getElementById('earnedBadgesGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Update section title
+            const categoryNames = {
+                all: 'All Earned Badges',
+                daily: 'Daily Badges',
+                weekly: 'Weekly Badges', 
+                monthly: 'Monthly Badges',
+                seasonal: 'Seasonal Badges',
+                milestone: 'Milestone Badges'
+            };
+            
+            const categoryIcons = {
+                all: '🏆',
+                daily: '☀️',
+                weekly: '📅',
+                monthly: '🗓️',
+                seasonal: '🌸',
+                milestone: '🎯'
+            };
+
+            document.getElementById('sectionIcon').textContent = categoryIcons[currentFilter];
+            document.getElementById('sectionTitle').textContent = categoryNames[currentFilter];
+            document.getElementById('sectionCount').textContent = `(${filteredBadges.length})`;
+
+            if (filteredBadges.length === 0) {
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            
+            // Sort badges by most recently earned
+            const sortedBadges = [...filteredBadges].sort((a, b) => 
+                new Date(b.earnedDate) - new Date(a.earnedDate)
+            );
+
+            grid.innerHTML = sortedBadges.map(badge => `
+                <div class="earned-badge" onclick="showBadgeDetails('${badge.id}')">
+                    <div class="earned-crown">👑</div>
+                    <div class="badge-header">
+                        <div class="badge-icon">${badge.icon}</div>
+                        <div class="badge-details">
+                            <div class="badge-name">
+                                ${badge.name}
+                                <span class="rarity-indicator rarity-${badge.rarity}">${badge.rarity.toUpperCase()}</span>
+                            </div>
+                            <div class="badge-desc">${badge.description}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="badge-meta">
+                        <div class="badge-earned-date">
+                            🎉 <strong>Progress:</strong> ${badge.progress}/${badge.max}
+                        </div>
+                        <div class="badge-earned-count">
+                            🔄 <strong>Times Earned:</strong> ${badge.timesEarned}${badge.timesEarned > 1 ? ' times' : ' time'}
+                        </div>
+                        <div class="reset-info">
+                            ${getResetInfo(badge.resetType)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Get reset information text
+        function getResetInfo(resetType) {
+            const resetTexts = {
+                'permanent': 'Never resets - permanent achievement',
+                'daily': 'Resets daily at midnight',
+                'weekly': 'Resets every Sunday at midnight',
+                'monthly': 'Resets on 1st of each month',
+                'seasonal': 'Spring (resets Feb 1), Summer (resets May 1), Autumn (resets Aug 1), Winter (resets Nov 1)'
+            };
+            return resetTexts[resetType] || 'Custom reset schedule';
+        }
+
+        // Show detailed badge information
+        function showBadgeDetails(badgeId) {
+            const badge = earnedBadges.find(b => b.id === badgeId);
+            if (!badge) return;
+
+            alert(`🏆 ${badge.name}\n\n${badge.description}\n\nProgress: ${badge.progress}/${badge.max}\nType: ${badge.resetType.charAt(0).toUpperCase() + badge.resetType.slice(1)}\nTimes Earned: ${badge.timesEarned}${badge.timesEarned > 1 ? ' times' : ' time'}\nRarity: ${badge.rarity.toUpperCase()}\nPremium: ${badge.premium ? 'Yes' : 'No'}\n\n${getResetInfo(badge.resetType)}`);
+        }
+
+        // Navigation functions
+        function goToChat() {
+            // Navigate to the main Haven chat interface
+            window.location.href = 'index.html';
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializePage);
+
+        // Debug function to test the flow
+        function debugFlow() {
+            console.log('=== DEBUGGING EARNED BADGES FLOW ===');
+            console.log('Badge names mapping:', Object.keys(badgeNames).length, 'badges');
+            console.log('Earned badges:', earnedBadges);
+            console.log('Current filter:', currentFilter);
+            
+            // Test localStorage data
+            const savedBadges = localStorage.getItem('havenBadges');
+            const savedStats = localStorage.getItem('havenStats');
+            console.log('Saved badges in localStorage:', savedBadges ? JSON.parse(savedBadges) : 'None');
+            console.log('Saved stats in localStorage:', savedStats ? JSON.parse(savedStats) : 'None');
+        }
+
+        // Expose debug function globally
+        window.debugFlow = debugFlow;
+    </script>
+</body>
+</html>

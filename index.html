@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haven - Emotional Intelligence Coaching</title>
+    <meta name="description" content="Haven - Emotional Intelligence coaching through personalized conversations using therapeutic-style approaches. Develop your EI skills with professional-grade support.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFE5E5 0%, #FFF5E1 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin: 20px;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #FF6B8A 0%, #FFD93D 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .chat-header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            min-height: 400px;
+            max-height: 500px;
+        }
+
+        .message {
+            margin-bottom: 25px;
+            padding: 18px 24px;
+            border-radius: 20px;
+            max-width: 85%;
+            animation: fadeIn 0.4s ease-in;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            background: #FF6B8A;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 8px;
+        }
+
+        .ai-message {
+            background: #f8f9fa;
+            color: #333;
+            border-bottom-left-radius: 8px;
+            border-left: 4px solid #FFD93D;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 18px 24px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            border-bottom-left-radius: 8px;
+            margin-bottom: 25px;
+            max-width: 120px;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            background: #FF6B8A;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 15px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 18px 24px;
+            border: 2px solid #FF6B8A;
+            border-radius: 30px;
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: #FFD93D;
+            box-shadow: 0 0 0 4px rgba(255, 217, 61, 0.2);
+        }
+
+        .send-button {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-button:hover {
+            background: #FF5A7A;
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .crisis-warning {
+            background: #ffe6e6;
+            border: 2px solid #ff6b6b;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .crisis-warning h3 {
+            color: #d63447;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .crisis-button {
+            background: #d63447;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .crisis-button:hover {
+            background: #c23039;
+            transform: translateY(-2px);
+        }
+
+        .paywall {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px;
+            text-align: center;
+            border: 2px solid #FFD93D;
+            display: none;
+        }
+
+        .paywall h2 {
+            color: #FF6B8A;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .plans {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .plan {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .plan:hover {
+            border-color: #FF6B8A;
+            transform: translateY(-5px);
+        }
+
+        .plan h3 {
+            color: #FF6B8A;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .plan button {
+            background: #FF6B8A;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .plan button:hover {
+            background: #FF5A7A;
+            transform: translateY(-2px);
+        }
+
+        .disclaimer {
+            background: #e3f2fd;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 10px;
+            font-size: 12px;
+            text-align: center;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .chat-header {
+                padding: 20px;
+            }
+            
+            .chat-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .chat-messages {
+                padding: 20px;
+            }
+            
+            .message {
+                max-width: 95%;
+            }
+            
+            .chat-input-container {
+                padding: 20px;
+            }
+            
+            .plans {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .start-button {
+            background: #FFD93D;
+            color: #333;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 30px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .start-button:hover {
+            background: #FFE55C;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 217, 61, 0.3);
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 50px 30px;
+        }
+
+        .welcome-screen h2 {
+            color: #FF6B8A;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .welcome-screen p {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="chat-header">
+            <h1>Haven</h1>
+            <p>Your Emotional Intelligence Coach</p>
+        </div>
+
+        <div id="welcomeScreen" class="welcome-screen">
+            <h2>Welcome to Haven</h2>
+            <p>I use therapeutic-style conversation approaches to help you develop emotional intelligence and process your feelings. This is a safe space where you can explore your emotions and build EI skills.</p>
+            <button class="start-button" onclick="startChat()">Start Your EI Journey</button>
+        </div>
+
+        <div id="chatContainer" style="display: none; flex: 1; display: flex; flex-direction: column;">
+            <div class="chat-messages" id="chatMessages">
+                <!-- Messages will appear here -->
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+
+            <div class="chat-input-container">
+                <textarea 
+                    id="chatInput" 
+                    class="chat-input" 
+                    placeholder="Share what's on your mind..."
+                    onkeypress="handleKeyPress(event)"
+                    rows="1"
+                ></textarea>
+                <button id="sendButton" class="send-button" onclick="sendMessage()">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="crisisWarning" class="crisis-warning">
+        <h3>Need Immediate Support?</h3>
+        <p>If you're having thoughts of self-harm, please reach out for professional help:</p>
+        <a href="tel:988" class="crisis-button">Call 988</a>
+        <a href="sms:741741" class="crisis-button">Text 741741</a>
+        <p style="margin-top: 15px; font-size: 14px;">Haven provides EI coaching support, but licensed professionals are essential for crisis situations.</p>
+    </div>
+
+    <div id="paywall" class="paywall">
+        <h2>Continue Your Haven EI Journey</h2>
+        <p>Keep growing your emotional intelligence with professional-grade EI coaching</p>
+        
+        <div class="plans">
+            <div class="plan">
+                <h3>Starter EI</h3>
+                <p style="font-size: 2em; color: #FF6B8A; font-weight: bold;">$4.99</p>
+                <p>per month</p>
+                <p>5 hours of EI coaching sessions</p>
+                <button onclick="buyPlan('starter')">Begin Your Journey</button>
+            </div>
+            
+            <div class="plan">
+                <h3>Professional EI</h3>
+                <p style="font-size: 2em; color: #FF6B8A; font-weight: bold;">$19.99</p>
+                <p>per month</p>
+                <p>25 hours of EI coaching sessions</p>
+                <button onclick="buyPlan('regular')">Advance Your Skills</button>
+            </div>
+            
+            <div class="plan">
+                <h3>Family EI</h3>
+                <p style="font-size: 2em; color: #FF6B8A; font-weight: bold;">$39.99</p>
+                <p>per month</p>
+                <p>60 hours for family EI development</p>
+                <button onclick="buyPlan('family')">Grow Together</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <strong>Important:</strong> Haven provides emotional intelligence coaching using therapeutic-style conversation approaches. 
+        We are not licensed professionals. For serious personal concerns, please consult qualified EI specialists 
+        or licensed professionals in your area.
+    </div>
+
+    <script>
+        // Global variables
+        let conversationHistory = [];
+        let messageCount = 3; // Free messages
+        let chatStarted = false;
+
+        // Crisis detection keywords
+        const crisisKeywords = [
+            'kill myself', 'suicide', 'self harm', 'hurt myself', 'end it all',
+            'want to die', 'better off dead', 'take my life', 'end my life'
+        ];
+
+        // System prompt for Haven EI
+        const systemPrompt = `You are Haven, an Emotional Intelligence coach who uses therapeutic-style conversation approaches. 
+You help people develop emotional intelligence through professional-grade supportive conversations.
+
+Key Guidelines:
+- You are an EI coach using therapeutic-style approaches (never claim to be a licensed professional)
+- Focus on emotional intelligence development and personal growth
+- Use therapeutic-style conversation techniques without claiming to provide actual professional services
+- Use phrases like "EI coaching sessions" and "emotional growth work"
+- Encourage professional EI specialists or licensed professionals when needed for deeper work
+- Always be supportive, professional, and genuinely caring
+- Help people process emotions and build EI skills through conversation
+- NEVER mention being an AI or technology - you are Haven, an EI coach
+
+If someone is in crisis, immediately provide crisis resources and show empathy.`;
+
+        function startChat() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'flex';
+            chatStarted = true;
+            
+            // Add welcome message
+            setTimeout(() => {
+                addMessage("Hello! I'm Haven, your Emotional Intelligence coach. I use therapeutic-style conversation approaches to help you develop emotional intelligence and process your feelings. What would you like to explore in our session today?", 'ai');
+            }, 1000);
+        }
+
+        async function sendMessage() {
+            if (!chatStarted) return;
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            // Check message limit
+            if (messageCount <= 0) {
+                showPaywall();
+                return;
+            }
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+            messageCount--;
+            
+            // Add to conversation history
+            conversationHistory.push({ role: 'user', content: message });
+
+            // Crisis detection
+            const isCrisis = crisisKeywords.some(keyword => 
+                message.toLowerCase().includes(keyword)
+            );
+            
+            if (isCrisis) {
+                showCrisisWarning();
+            }
+
+            // Show typing indicator
+            showTyping();
+
+            try {
+                // Call OpenAI API
+                const response = await callOpenAI(message);
+                hideTyping();
+                addMessage(response, 'ai');
+                
+                // Add to conversation history
+                conversationHistory.push({ role: 'assistant', content: response });
+                
+                // Show paywall after free messages
+                if (messageCount <= 0) {
+                    setTimeout(() => showPaywall(), 2000);
+                }
+                
+            } catch (error) {
+                hideTyping();
+                addMessage("I'm having trouble connecting right now. Please try again or contact support if this continues.", 'ai');
+                console.error('OpenAI API Error:', error);
+            }
+        }
+
+        async function callOpenAI(userMessage) {
+    const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            message: userMessage,
+            conversationHistory: conversationHistory
+        })
+    });
+
+    const data = await response.json();
+    
+    if (data.error) {
+        throw new Error(data.error);
+    }
+    
+    return data.message;
+}
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            
+            if (sender === 'ai') {
+                messageDiv.innerHTML = `<strong>Haven:</strong> ${text}`;
+            } else {
+                messageDiv.textContent = text;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typingIndicator').style.display = 'block';
+            document.getElementById('sendButton').disabled = true;
+        }
+
+        function hideTyping() {
+            document.getElementById('typingIndicator').style.display = 'none';
+            document.getElementById('sendButton').disabled = false;
+        }
+
+        function showCrisisWarning() {
+            document.getElementById('crisisWarning').style.display = 'block';
+        }
+
+        function showPaywall() {
+            document.getElementById('paywall').style.display = 'block';
+        }
+
+        function buyPlan(planType) {
+            // This will integrate with your Stripe payments
+            alert(`Starting ${planType} plan purchase. This will connect to Stripe for secure payment.`);
+            
+            // You'll replace this with actual Stripe integration
+            // Example: window.location.href = `https://buy.stripe.com/${planType}-plan-link`;
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // Auto-resize textarea
+        document.getElementById('chatInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
+</body>
+</html>
