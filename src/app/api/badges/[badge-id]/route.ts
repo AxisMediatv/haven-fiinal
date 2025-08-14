@@ -1,6 +1,15 @@
 import { NextResponse } from 'next/server';
 
-const badgeDatabase = {
+interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  rarity: string;
+  category: string;
+}
+
+const badgeDatabase: Record<string, Badge> = {
   'first-haven-chat': {
     id: 'first-haven-chat',
     name: 'First Haven Chat',
